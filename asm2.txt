@@ -1,0 +1,40 @@
+.arch armv7ve
+.arm
+.fpu vfpv4
+
+.macro mov32, cond, reg, val
+    movw\cond \reg, #:lower16:\val
+    movt\cond \reg, #:upper16:\val
+.endm
+
+.text
+.global main
+.type main, %function
+main:
+	push {r10,fp,lr}
+	sub sp,sp,#8
+	add fp,sp,#0
+	mov r2,#0
+	str r2,[fp]
+	mov r2,#7
+	str r2,[fp,#4]
+	ldr r0,[fp,#4]
+	bl putint
+	mov r2,#3
+	ldr r3,[fp]
+	add r3,r2,r3
+	str r3,[fp]
+	ldr r2,[fp,#4]
+	mov r3,#10
+	add r3,r2,r3
+	str r3,[fp,#4]
+	ldr r2,[fp]
+	ldr r3,[fp,#4]
+	add r3,r2,r3
+	mov r0,r3
+	bl putint
+	mov r0,#0
+	add fp,fp,#8
+	mov sp,fp
+	pop {r10,fp,lr}
+	bx lr
