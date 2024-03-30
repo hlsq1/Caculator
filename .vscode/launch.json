@@ -22,6 +22,17 @@
 		},
 		{
 			// 可采用GCC或者Clang编译器
+			"name": "Debug IR vscode-lldb",
+			"type": "lldb",
+			"request": "launch",
+			"program": "${workspaceFolder}/cmake-build-debug/calculator",
+			"args": ["-S", "-I", "tests/test1.txt"],
+			"cwd": "${workspaceFolder}",
+			// 不需要编译时可注释掉
+			"preLaunchTask": "CMake: build"
+		},
+		{
+			// 可采用GCC或者Clang编译器
 			"name": "Debug IR",
 			"type": "cppdbg",
 			"request": "launch",
