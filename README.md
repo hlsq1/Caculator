@@ -34,9 +34,35 @@ tests 目录下放置了一些简单的测试用例代码
 
 thirdparty 目录下放置了一些第三方的工具，如 antlr4.12.0
 
+## 程序构建
+
+请使用VSCode + WSL/Container/SSH + Ubuntu 22.04进行编译与程序构建。
+
+在使用前请使用命令安装clang-format与clang-tidy，这样该项目可使用根文件夹下的.clang-format和.clang-tidy进行代码分析。
+大家也可自行修改.clang-format和.clang-tidy的内容。
+
+安装命令格式如下：
+
+```shell
+sudo apt install -y clang-format clang-tidy
+```
+
+方式一使用VScode的cmake插件直接先选择clang编译器后进行程序的构建。
+
+方式二可使用如下的命令进行构建。
+
+```shell
+# cmake根据CMakeLists.txt进行配置与检查，这里使用clang编译器并且是Debug模式
+cmake -B cmake-build-debug -S . -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++
+# cmake，其中--parallel说明是并行编译
+cmake --build cmake-build-debug --parallel
+```
+
 ## 计算器使用方法
 
-### Linux 或 Mac 或 msys2 平台
+在Ubuntu 22.04平台上运行。支持的命令如下所示：
+
+```shell
 
 ./cmake-build-debug/calculator -S -a test.txt
 
@@ -67,38 +93,7 @@ thirdparty 目录下放置了一些第三方的工具，如 antlr4.12.0
 ./cmake-build-debug/calculator -R -A test.txt
 
 ./cmake-build-debug/calculator -R -D test.txt
-
-### Windows 平台（cmd 命令行）
-
-.\cmake-build-debug\calculator.exe -S -a test.txt
-
-.\cmake-build-debug\calculator.exe -S -a -A test.txt
-
-.\cmake-build-debug\calculator.exe -S -a -D test.txt
-
-.\cmake-build-debug\calculator.exe -S -a -o test.pdf test.txt
-
-.\cmake-build-debug\calculator.exe -S -a -A -o test.pdf test.txt
-
-.\cmake-build-debug\calculator.exe -S -a -D -o test.pdf test.txt
-
-.\cmake-build-debug\calculator.exe -S -I test.txt
-
-.\cmake-build-debug\calculator.exe -S -I -A test.txt
-
-.\cmake-build-debug\calculator.exe -S -I -D test.txt
-
-.\cmake-build-debug\calculator.exe -S -I -o ir.txt test.txt
-
-.\cmake-build-debug\calculator.exe -S -I -A -o ir.txt test.txt
-
-.\cmake-build-debug\calculator.exe -S -I -D -o ir.txt test.txt
-
-.\cmake-build-debug\calculator.exe -R test.txt
-
-.\cmake-build-debug\calculator.exe -R -A test.txt
-
-.\cmake-build-debug\calculator.exe -R -D test.txt
+```
 
 ## 工具
 
@@ -156,6 +151,8 @@ pacman -U https://mirrors.ustc.edu.cn/msys2/mingw/mingw64/mingw-w64-x86_64-antlr
 
 请按照计算器实验的文档要求编写注释，可通过doxygen工具生成网页版的文档，借助latex可生成pdf格式的文档。
 
+请在本实验以及后续的实验按照格式进行注释。
+
 ### 生成网页版文档
 
 ```shell
@@ -177,7 +174,16 @@ tests 目录下存放了一些简单的测试用例。其中 test1.c 是 test1.t
 
 由于 qemu 的用户模式在 Window 系统下不支持，因此要么在真实的开发板上运行，或者用 Linux 系统下的 qemu 来运行。
 
-这里介绍用 Linux 系统下的 qemu 来运行。
+后面介绍如用 Linux 系统下的 qemu 来运行。
+
+### 计算器调试运行
+
+由于自定的gdb或者lldb调试器对C++的STL模版库提供的类如string、map等的显示不够友好，因此请大家确保安装
+vadimcn.vscode-lldb插件，也可以更新最新的代码后vscode会提示安装推荐插件后自动安装。
+如安装不上请手动下载后安装，网址如下：
+<https://github.com/vadimcn/codelldb/releases/>
+
+调试运行配置可参考.vscode/launch.json中的配置。
 
 ### 生成 ARM32 的汇编
 

@@ -180,8 +180,8 @@ void free_ast_node(ast_node * node)
             free_ast_node(child);
         }
 
-        // 清理孩子元素
-        node->sons.clear();
+        // 这里没有必要清理孩子，由于下面就要删除该节点
+        // node->sons.clear();
 
         // 清理node资源
         delete node;
