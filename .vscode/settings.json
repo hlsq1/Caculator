@@ -108,6 +108,10 @@
 			"path": "C:/LinuxEnv/msys64/msys2_shell.cmd",
 			"args": ["-defterm", "-clang64", "-no-start", "-here", "-shell", "zsh"]
 		},
+		"mingw64": {
+			"path": "C:/LinuxEnv/msys64/msys2_shell.cmd",
+			"args": ["-defterm", "-mingw64", "-no-start", "-here", "-shell", "zsh"]
+		},
 		"PowerShell": {
 			"source": "PowerShell",
 			"icon": "terminal-powershell"
