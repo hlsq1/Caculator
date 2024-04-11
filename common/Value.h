@@ -20,15 +20,6 @@
 class Value {
 
 protected:
-    /// @brief 新建一个常量名字，全局编号，没有考虑常量的重用
-    /// \return 常量名字
-    static std::string createConstVarName()
-    {
-        static uint64_t tempConstCount = 0; // 常量计数，默认从0开始
-
-        return "%c" + std::to_string(tempConstCount++);
-    }
-
     /// @brief 新建一个临时变量名，全局编号
     /// \return 临时变量名
     static std::string createTempVarName()
@@ -78,7 +69,7 @@ public:
     /// @brief 实数常量的值
     float realVal = 0;
 
-    /// @brief 寄存器编号，-1表示没有分配寄存器
+    /// @brief 寄存器编号，-1表示没有分配寄存器，大于等于0代表是寄存器型Value
     int32_t regId = -1;
 
     /// @brief 变量在栈内的偏移量，对于全局变量默认为0，临时变量没有意义
@@ -184,33 +175,6 @@ public:
     }
 };
 
-/// @brief 临时变量类
-class TempValue : public Value {
-
-public:
-    /// @brief 创建临时Value，用于保存中间IR指令的值
-    /// \param val
-    TempValue(BasicType _type) : Value(_type)
-    {
-        _temp = true;
-        name = createTempVarName();
-    }
-
-    /// @brief 创建临时Value，用于保存中间IR指令的值
-    /// \param val
-    TempValue() : Value(BasicType::TYPE_FLOAT)
-    {
-        _temp = true;
-        name = createTempVarName();
-    }
-
-    /// @brief 析构函数
-    ~TempValue() override
-    {
-        // 如有资源清理，请这里追加代码
-    }
-};
-
 /// @brief 常量类
 class ConstValue : public Value {
 
@@ -255,20 +219,19 @@ public:
 class VarValue : public Value {
 
 public:
-    /// @brief 创建临时Value，用于保存中间IR指令的值
+    /// @brief 局部变量或者全局变量型Value
     /// \param val
-    VarValue(std::string _name, BasicType _type) : Value(_name, _type)
+    VarValue(std::string _name, BasicType _type = BasicType::TYPE_FLOAT) : Value(_name, _type)
     {
         _var = true;
     }
 
-    /// @brief 创建临时Value，用于保存中间IR指令的值
-    /// \param val
-    VarValue(BasicType type) : Value(type)
-    {
-        name = createLocalVarName();
-        _var = true;
-    }
+	/// @brief 匿名变量Value
+	/// @param _type 类型
+	VarValue(BasicType _type = BasicType::TYPE_FLOAT) : VarValue(createLocalVarName(), _type)
+	{
+
+	}
 
     /// @brief 析构函数
     ~VarValue() override
@@ -277,16 +240,50 @@ public:
     }
 };
 
-/// @brief 变量类
-class IntRegValue : public Value {
+/// @brief 临时变量类
+class TempValue : public VarValue {
 
 public:
     /// @brief 创建临时Value，用于保存中间IR指令的值
     /// \param val
-    IntRegValue(std::string _name, int32_t _reg_no) : Value(_name, BasicType::TYPE_INT)
+    TempValue(BasicType _type = BasicType::TYPE_FLOAT) : VarValue(createTempVarName(), _type)
     {
-        _var = true;
+        _temp = true;
+    }
+
+    /// @brief 析构函数
+    ~TempValue() override
+    {
+        // 如有资源清理，请这里追加代码
+    }
+};
+
+/// @brief 整型寄存器Value
+class RegValue : public VarValue {
+
+public:
+    /// @brief 整型寄存器型Value
+    /// \param val
+    RegValue(std::string _name, int32_t _reg_no, BasicType _type) : VarValue(_name, _type)
+    {
         regId = _reg_no;
+    }
+
+    /// @brief 析构函数
+    ~RegValue() override
+    {
+        // 如有资源清理，请这里追加代码
+    }
+};
+
+/// @brief 整型寄存器Value
+class IntRegValue : public RegValue {
+
+public:
+    /// @brief 整型寄存器型Value
+    /// \param val
+    IntRegValue(std::string _name, int32_t _reg_no) : RegValue(_name, _reg_no, BasicType::TYPE_INT)
+    {
     }
 
     /// @brief 析构函数
@@ -300,9 +297,9 @@ public:
 class MemValue : public Value {
 
 public:
-    /// @brief 创建内存Value，用于保存中间IR指令的值
+    /// @brief 创建内存Value
     /// \param val
-    MemValue(BasicType type) : Value(type)
+    MemValue(BasicType type = BasicType::TYPE_FLOAT) : Value(type)
     {
         name = createMemVarName();
         _mem = true;
@@ -310,25 +307,6 @@ public:
 
     /// @brief 析构函数
     ~MemValue() override
-    {
-        // 如有资源清理，请这里追加代码
-    }
-};
-
-/// @brief 寄存器Value，该值保存在寄存器中
-class RegValue : public Value {
-
-public:
-    /// @brief 创建寄存器Value
-    /// \param reg_no 寄存器编号
-    RegValue(int reg_no, std::string reg_name) : Value(BasicType::TYPE_INT)
-    {
-        name = reg_name;
-        regId = reg_no;
-    }
-
-    /// @brief 析构函数
-    ~RegValue() override
     {
         // 如有资源清理，请这里追加代码
     }

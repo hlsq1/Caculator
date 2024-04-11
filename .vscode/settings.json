@@ -210,9 +210,6 @@
 	"markdown.copyFiles.destination": {
 		"*.md": "figs/${documentBaseName}-${fileName}"
 	},
-	"[markdown]": {
-		"editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
-	},
 	"pangu.auto_format_on_save": true,
 	"markdown-preview-enhanced.codeBlockTheme": "github-dark.css",
 	"markdown-preview-enhanced.previewTheme": "one-dark.css",

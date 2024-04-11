@@ -182,10 +182,10 @@ void free_ast_node(ast_node * node)
 
         // 这里没有必要清理孩子，由于下面就要删除该节点
         // node->sons.clear();
-
-        // 清理node资源
-        delete node;
     }
+
+    // 清理node资源
+    delete node;
 }
 
 /// @brief AST资源清理
