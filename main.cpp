@@ -240,20 +240,20 @@ int main(int argc, char * argv[])
         }
 
         // 创建词法语法分析器
-        FrontEndExecutor * fontEndExecutor = nullptr;
+        FrontEndExecutor * frontEndExecutor;
         if (gFrontEndAntlr4) {
             // Antlr4
-            fontEndExecutor = new Antlr4Executor(gInputFile);
+            frontEndExecutor = new Antlr4Executor(gInputFile);
         } else if (gFrontEndRecursiveDescentParsing) {
             // 递归下降分析法
-            fontEndExecutor = new RecursiveDescentExecutor(gInputFile);
+            frontEndExecutor = new RecursiveDescentExecutor(gInputFile);
         } else {
             // 默认为Flex+Bison
-            fontEndExecutor = new FlexBisonExecutor(gInputFile);
+            frontEndExecutor = new FlexBisonExecutor(gInputFile);
         }
 
         // 前端执行：词法分析、语法分析后产生抽象语法树，其root为全局变量ast_root
-        subResult = fontEndExecutor->run();
+        subResult = frontEndExecutor->run();
         if (!subResult) {
 
             std::cout << "FrontEnd's analysis failed\n";
@@ -263,7 +263,7 @@ int main(int argc, char * argv[])
         }
 
         // 清理前端资源
-        delete fontEndExecutor;
+        delete frontEndExecutor;
 
         // 这里可进行非线性AST的优化
 

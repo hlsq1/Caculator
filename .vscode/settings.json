@@ -210,7 +210,6 @@
 	"markdown.copyFiles.destination": {
 		"*.md": "figs/${documentBaseName}-${fileName}"
 	},
-	"pangu.auto_format_on_save": true,
 	"markdown-preview-enhanced.codeBlockTheme": "github-dark.css",
 	"markdown-preview-enhanced.previewTheme": "one-dark.css",
 	"markdown-preview-enhanced.imageFolderPath": "/figs",
@@ -227,5 +226,24 @@
 	},
 	"?cmake.languageSupport.dotnetPath": "请根据操作系统的种类进行修改,Linux：/usr/bin/dotnet,Mac：/usr/local/opt/dotnet@6/bin/dotnet,Windows：C:/Program Files/dotnet/dotnet.exe",
 	"cmake.languageSupport.dotnetPath": "/usr/bin/dotnet",
-	"workbench.editor.enablePreview": false
+	"workbench.editor.enablePreview": false,
+	"C_Cpp.intelliSenseEngine": "disabled",
+	"clangd.arguments": [
+		// 在后台自动分析文件（基于complie_commands)
+		"--background-index",
+		// 标记compelie_commands.json文件的目录位置
+		"--compile-commands-dir=cmake-build-debug",
+		// 同时开启的任务数量
+		"-j=4",
+		// clang-tidy功能
+		"--clang-tidy",
+		// 全局补全（会自动补充头文件）
+		"--all-scopes-completion",
+		// 详细补全
+		"--completion-style=detailed",
+		// 补充头文件
+		"--header-insertion=iwyu",
+		// pch优化的位置
+		"--pch-storage=disk"
+	]
 }

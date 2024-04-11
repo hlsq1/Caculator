@@ -35,6 +35,7 @@
 		"joaompinto.vscode-graphviz",
 		"josetr.cmake-language-support-vscode",
 		"kevinrose.vsc-python-indent",
+		"llvm-vs-code-extensions.vscode-clangd",
 		"maelvalais.autoconf",
 		"mattn.lisp",
 		"mechatroner.rainbow-csv",
