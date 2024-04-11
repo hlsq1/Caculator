@@ -277,7 +277,7 @@ add_custom_command(
 	OUTPUT
 	${FLEX_OUTPUT}
 	COMMAND
-	${FLEX_EXECUTABLE} ${FLEX_OPTION} -o CalculatorFlex.cpp --header-file=CalculatorFlex.h ${FLEX_INPUT}
+	${FLEX_EXECUTABLE} ${FLEX_OPTION} -o ${FLEX_GEN_DIR}/CalculatorFlex.cpp --header-file=${FLEX_GEN_DIR}/CalculatorFlex.h ${FLEX_INPUT}
 	DEPENDS
 	${FLEX_INPUT}
 	WORKING_DIRECTORY
@@ -300,7 +300,7 @@ add_custom_command(
 	OUTPUT
 	${BISON_OUTPUT}
 	COMMAND
-	${BISON_EXECUTABLE} -d --debug -o CalculatorBison.cpp ${BISON_HEADFILE_OPTION}=CalculatorBison.h ${BISON_INPUT}
+	${BISON_EXECUTABLE} -d --debug -o ${FLEX_GEN_DIR}/CalculatorBison.cpp ${BISON_HEADFILE_OPTION}=${FLEX_GEN_DIR}/CalculatorBison.h ${BISON_INPUT}
 	DEPENDS
 	${BISON_INPUT}
 	WORKING_DIRECTORY
