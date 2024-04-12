@@ -14,7 +14,7 @@
 			// 分析树可视化，也就是具体语法树AST
 			"visualParseTree": true,
 			// 文本输出分析树
-			"printParseTree": false,
+			"printParseTree": true,
 			// 语法的开始符号
 			"startRule": "compileUnit",
 			// 描述语法的g4文件

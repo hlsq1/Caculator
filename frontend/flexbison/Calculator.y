@@ -19,7 +19,7 @@ void yyerror(char * msg);
 // 联合体声明，用于后续终结符和非终结符号属性指定使用
 %union {
     class ast_node * node;
-    
+
     struct digit_int_attr integer_num;
     struct digit_real_attr float_num;
     struct var_id_attr var_id;
@@ -166,8 +166,8 @@ Statement : T_ID '=' Expr ';' {
     }
     ;
 
-Expr : AddExp { 
-        $$ = $1; 
+Expr : AddExp {
+        $$ = $1;
     }
     ;
 

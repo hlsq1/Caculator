@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.12)
 # 设置工程属性，如版本，开发语言等
 project(calculator VERSION 1.0.0.2 LANGUAGES CXX)
 
+# 是否输出Bison语法分析时是否输出自动机， 默认输出
+# 如果修改为OFF，请删除cmake_build_debug后重新build
+set(BISON_OUTPUT_GRAPH ON CACHE BOOL "Enable/Disable output of a graph of the automaton for Bison")
+
 # 这个目前没有用处，可删除
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -296,17 +300,36 @@ else()
 	set(BISON_HEADFILE_OPTION "--defines")
 endif()
 
+if(BISON_OUTPUT_GRAPH)
+	set(BISON_EXTRA_OPTION "--graph=${FLEX_GEN_DIR}/CalculatorBison.dot")
+else()
+	set(BISON_EXTRA_OPTION)
+endif()
+
 # 通过bison生成语法分析源代码
 add_custom_command(
 	OUTPUT
 	${BISON_OUTPUT}
 	COMMAND
-	${BISON_EXECUTABLE} -d --debug -o ${FLEX_GEN_DIR}/CalculatorBison.cpp ${BISON_HEADFILE_OPTION}=${FLEX_GEN_DIR}/CalculatorBison.h ${BISON_INPUT}
+	${BISON_EXECUTABLE} -d --debug ${BISON_EXTRA_OPTION} -o ${FLEX_GEN_DIR}/CalculatorBison.cpp ${BISON_HEADFILE_OPTION}=${FLEX_GEN_DIR}/CalculatorBison.h ${BISON_INPUT}
 	DEPENDS
 	${BISON_INPUT}
 	WORKING_DIRECTORY
 	${BISON_GEN_DIR}
 )
+
+if(BISON_OUTPUT_GRAPH)
+	# 转换dot文件成png文件
+	add_custom_command(
+		TARGET ${PROJECT_NAME}
+		POST_BUILD
+		COMMAND
+		dot -Tpng -o ${FLEX_GEN_DIR}/CalculatorBison.png ${FLEX_GEN_DIR}/CalculatorBison.dot
+		COMMENT
+		"dot2png"
+		VERBATIM
+	)
+endif()
 
 # 通过antlr4.12.0生成词法与语法分析源代码
 # WORKING_DIRECTORY指定工作目录时Mac平台有问题，因此使用绝对地址
