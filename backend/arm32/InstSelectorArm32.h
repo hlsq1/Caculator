@@ -72,6 +72,22 @@ protected:
     /// @param inst IR指令
     void translate_sub_int32(IRInst * inst);
 
+    /// @brief 整数乘法指令翻译成ARM32汇编
+    /// @param inst IR指令
+    void translate_mul_int32(IRInst * inst);
+
+    /// @brief 整数除法指令翻译成ARM32汇编
+    /// @param inst IR指令
+    void translate_div_int32(IRInst * inst);
+
+    /// @brief 整数取余指令翻译成ARM32汇编
+    /// @param inst IR指令
+    void translate_mod_int32(IRInst * inst);
+
+    /// @brief 整数求负指令翻译成ARM32汇编
+    /// @param inst IR指令
+    void translate_minus_int32(IRInst * inst);
+
     /// @brief 二元操作指令翻译成ARM32汇编
     /// @param inst IR指令
     /// @param operator_name 操作码
@@ -83,6 +99,16 @@ protected:
                                 int rs_reg_no = REG_ALLOC_SIMPLE_DST_REG_NO,
                                 int op1_reg_no = REG_ALLOC_SIMPLE_SRC1_REG_NO,
                                 int op2_reg_no = REG_ALLOC_SIMPLE_SRC2_REG_NO);
+
+    /// @brief 一元操作指令翻译成ARM32汇编
+    /// @param inst IR指令
+    /// @param operator_name 操作码
+    /// @param rs_reg_no 结果寄存器号
+    /// @param op1_reg_no 源操作数1寄存器号
+    void translate_one_operator(IRInst * inst,
+                                string operator_name,
+                                int rs_reg_no = REG_ALLOC_SIMPLE_DST_REG_NO,
+                                int op1_reg_no = REG_ALLOC_SIMPLE_SRC1_REG_NO);
 
     /// @brief 函数调用指令翻译成ARM32汇编
     /// @param inst IR指令

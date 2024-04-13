@@ -34,6 +34,10 @@ InstSelectorArm32::InstSelectorArm32(vector<IRInst *> & _irCode, ILocArm32 & _il
 
     translator_handlers[IRInstOperator::IRINST_OP_ADD_I] = &InstSelectorArm32::translate_add_int32;
     translator_handlers[IRInstOperator::IRINST_OP_SUB_I] = &InstSelectorArm32::translate_sub_int32;
+    translator_handlers[IRInstOperator::IRINST_OP_MUL_I] = &InstSelectorArm32::translate_mul_int32;
+    translator_handlers[IRInstOperator::IRINST_OP_DIV_I] = &InstSelectorArm32::translate_div_int32;
+    translator_handlers[IRInstOperator::IRINST_OP_MOD_I] = &InstSelectorArm32::translate_mod_int32;
+    translator_handlers[IRInstOperator::IRINST_OP_MINUS_I] = &InstSelectorArm32::translate_minus_int32;
 
     translator_handlers[IRInstOperator::IRINST_OP_FUNC_CALL] = &InstSelectorArm32::translate_call;
 }
@@ -232,6 +236,53 @@ void InstSelectorArm32::translate_two_operator(IRInst * inst,
     }
 }
 
+/// @brief 一元操作指令翻译成ARM32汇编
+/// @param inst IR指令
+/// @param operator_name 操作码
+/// @param rs_reg_no 结果寄存器号
+/// @param op1_reg_no 源操作数1寄存器号
+void InstSelectorArm32::translate_one_operator(IRInst * inst, string operator_name, int rs_reg_no, int op1_reg_no)
+{
+    Value * rs = inst->getDst();
+    Value * arg1 = inst->getSrc1();
+
+    std::string arg1_reg_name;
+    int arg1_reg_no = arg1->regId;
+
+    // 看arg1是否是寄存器，若是则寄存器寻址，否则要load变量到寄存器中
+    if (arg1_reg_no == -1) {
+        // arg1 -> r8
+        iloc.load_var(op1_reg_no, arg1);
+    } else if (arg1_reg_no != op1_reg_no) {
+        // 已分配的操作数1的寄存器和操作数2的缺省寄存器一致，这样会使得操作数2的值设置到一个寄存器上
+        // 缺省寄存器  2    3
+        // 实际寄存器  3    -1   有问题
+        // 实际寄存器  3    3    有问题
+        // 实际寄存器  3    4    无问题
+        iloc.mov_reg(op1_reg_no, arg1_reg_no);
+    }
+
+    arg1_reg_name = PlatformArm32::regName[op1_reg_no];
+
+    // 如果结果寄存器不是-1，那么使用指定的寄存器
+    if (rs->regId != -1) {
+        rs_reg_no = rs->regId;
+    } else if (rs->isTemp()) {
+        // 如果结果是临时变量，则使用指定的寄存器
+        rs->regId = rs_reg_no;
+    }
+
+    std::string rs_reg_name = PlatformArm32::regName[rs_reg_no];
+
+    // 执行单目运算
+    iloc.inst(operator_name, rs_reg_name, arg1_reg_name);
+
+    // 如果结果不在寄存器中，则保存到结果变量中
+    if (rs->regId == -1) {
+        iloc.store_var(rs_reg_no, rs, op1_reg_no);
+    }
+}
+
 /// @brief 整数加法指令翻译成ARM32汇编
 /// @param inst IR指令
 void InstSelectorArm32::translate_add_int32(IRInst * inst)
@@ -244,6 +295,34 @@ void InstSelectorArm32::translate_add_int32(IRInst * inst)
 void InstSelectorArm32::translate_sub_int32(IRInst * inst)
 {
     translate_two_operator(inst, "sub");
+}
+
+/// @brief 整数乘法指令翻译成ARM32汇编
+/// @param inst IR指令
+void InstSelectorArm32::translate_mul_int32(IRInst * inst)
+{
+    translate_two_operator(inst, "mul");
+}
+
+/// @brief 整数除法指令翻译成ARM32汇编
+/// @param inst IR指令
+void InstSelectorArm32::translate_div_int32(IRInst * inst)
+{
+    translate_two_operator(inst, "div");
+}
+
+/// @brief 整数取余指令翻译成ARM32汇编
+/// @param inst IR指令
+void InstSelectorArm32::translate_mod_int32(IRInst * inst)
+{
+    translate_two_operator(inst, "mod");
+}
+
+/// @brief 整数求负指令翻译成ARM32汇编
+/// @param inst IR指令
+void InstSelectorArm32::translate_minus_int32(IRInst * inst)
+{
+    translate_one_operator(inst, "minus");
 }
 
 /// @brief 函数调用指令翻译成ARM32汇编

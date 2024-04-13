@@ -31,6 +31,10 @@ CodeSimulator::CodeSimulator(SymbolTable & tab) : CodeGenerator(tab)
 
     calc_handlers[IRInstOperator::IRINST_OP_ADD_I] = &CodeSimulator::calc_add_int32;
     calc_handlers[IRInstOperator::IRINST_OP_SUB_I] = &CodeSimulator::calc_sub_int32;
+    calc_handlers[IRInstOperator::IRINST_OP_MUL_I] = &CodeSimulator::calc_mul_int32;
+    calc_handlers[IRInstOperator::IRINST_OP_DIV_I] = &CodeSimulator::calc_div_int32;
+    calc_handlers[IRInstOperator::IRINST_OP_MOD_I] = &CodeSimulator::calc_mod_int32;
+    calc_handlers[IRInstOperator::IRINST_OP_MINUS_I] = &CodeSimulator::calc_minus_int32;
 
     calc_handlers[IRInstOperator::IRINST_OP_FUNC_CALL] = &CodeSimulator::calc_call;
 }
@@ -99,6 +103,61 @@ bool CodeSimulator::calc_sub_int32(IRInst * inst)
     Value * srcVal2 = inst->getSrc2();
 
     destVal->intVal = srcVal1->intVal - srcVal2->intVal;
+    destVal->type.type = BasicType::TYPE_INT;
+
+    return true;
+}
+
+/// @brief 整数乘法指令计算
+/// @param inst IR中间指令
+bool CodeSimulator::calc_mul_int32(IRInst * inst)
+{
+    Value * destVal = inst->getDst();
+    Value * srcVal1 = inst->getSrc1();
+    Value * srcVal2 = inst->getSrc2();
+
+    destVal->intVal = srcVal1->intVal * srcVal2->intVal;
+    destVal->type.type = BasicType::TYPE_INT;
+
+    return true;
+}
+
+/// @brief 整数除法指令计算
+/// @param inst IR中间指令
+bool CodeSimulator::calc_div_int32(IRInst * inst)
+{
+    Value * destVal = inst->getDst();
+    Value * srcVal1 = inst->getSrc1();
+    Value * srcVal2 = inst->getSrc2();
+
+    destVal->intVal = srcVal1->intVal / srcVal2->intVal;
+    destVal->type.type = BasicType::TYPE_INT;
+
+    return true;
+}
+
+/// @brief 整数取余指令计算
+/// @param inst IR中间指令
+bool CodeSimulator::calc_mod_int32(IRInst * inst)
+{
+    Value * destVal = inst->getDst();
+    Value * srcVal1 = inst->getSrc1();
+    Value * srcVal2 = inst->getSrc2();
+
+    destVal->intVal = srcVal1->intVal % srcVal2->intVal;
+    destVal->type.type = BasicType::TYPE_INT;
+
+    return true;
+}
+
+/// @brief 整数求负指令计算
+/// @param inst IR中间指令
+bool CodeSimulator::calc_minus_int32(IRInst * inst)
+{
+    Value * destVal = inst->getDst();
+    Value * srcVal1 = inst->getSrc1();
+
+    destVal->intVal = -srcVal1->intVal;
     destVal->type.type = BasicType::TYPE_INT;
 
     return true;
