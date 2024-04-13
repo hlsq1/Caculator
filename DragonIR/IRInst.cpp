@@ -113,6 +113,15 @@ void LabelIRInst::toString(std::string & str)
 /// @param _op 操作符
 /// @param _result 结果操作数
 /// @param _srcVal1 源操作数1
+BinaryIRInst::BinaryIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1) : IRInst(_op, _result)
+{
+    srcValues.push_back(_srcVal1);
+}
+
+/// @brief 构造函数
+/// @param _op 操作符
+/// @param _result 结果操作数
+/// @param _srcVal1 源操作数1
 /// @param _srcVal2 源操作数2
 BinaryIRInst::BinaryIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1, Value * _srcVal2)
     : IRInst(_op, _result)
@@ -157,6 +166,11 @@ void BinaryIRInst::toString(std::string & str)
 
             // 取余指令，二元运算
             str = result->getName() + " = mod " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_MINUS_I:
+
+            // 取负指令，一元运算
+            str = result->getName() + " = minus " + src1->toString();
             break;
 
         default:

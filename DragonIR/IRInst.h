@@ -185,6 +185,12 @@ public:
     /// @param _op 操作符
     /// @param _result 结果操作数
     /// @param _srcVal1 源操作数1
+    BinaryIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1);
+
+    /// @brief 构造函数
+    /// @param _op 操作符
+    /// @param _result 结果操作数
+    /// @param _srcVal1 源操作数1
     /// @param _srcVal2 源操作数2
     BinaryIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1, Value * _srcVal2);
 
