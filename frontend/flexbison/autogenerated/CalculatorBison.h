@@ -68,7 +68,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "../Calculator.y"
+#line 20 "/root/calculator/frontend/flexbison/Calculator.y"
 
     class ast_node * node;
     

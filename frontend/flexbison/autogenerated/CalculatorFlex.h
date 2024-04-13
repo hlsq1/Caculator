@@ -470,7 +470,7 @@ extern int yylex (void);
 #undef yyTABLES_NAME
 #endif
 
-#line 117 "../Calculator.l"
+#line 117 "/root/calculator/frontend/flexbison/Calculator.l"
 
 
 #line 477 "CalculatorFlex.h"

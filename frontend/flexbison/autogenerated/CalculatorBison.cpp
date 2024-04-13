@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "../Calculator.y"
+#line 1 "/root/calculator/frontend/flexbison/Calculator.y"
 
 #include <cstdio>
 #include <cstring>
@@ -1130,7 +1130,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* CompileUnit: FuncDef  */
-#line 59 "../Calculator.y"
+#line 59 "/root/calculator/frontend/flexbison/Calculator.y"
                       {
         (yyval.node) = create_contain_node(ast_operator_type::AST_OP_COMPILE_UNIT, (yyvsp[0].node));
         ast_root = (yyval.node);
@@ -1139,7 +1139,7 @@ yyreduce:
     break;
 
   case 3: /* CompileUnit: Statement  */
-#line 63 "../Calculator.y"
+#line 63 "/root/calculator/frontend/flexbison/Calculator.y"
                 {
         (yyval.node) = create_contain_node(ast_operator_type::AST_OP_COMPILE_UNIT, (yyvsp[0].node));
         ast_root = (yyval.node);
@@ -1148,7 +1148,7 @@ yyreduce:
     break;
 
   case 4: /* CompileUnit: CompileUnit FuncDef  */
-#line 67 "../Calculator.y"
+#line 67 "/root/calculator/frontend/flexbison/Calculator.y"
                           {
         (yyval.node) = insert_ast_node((yyvsp[-1].node), (yyvsp[0].node));
     }
@@ -1156,7 +1156,7 @@ yyreduce:
     break;
 
   case 5: /* CompileUnit: CompileUnit Statement  */
-#line 70 "../Calculator.y"
+#line 70 "/root/calculator/frontend/flexbison/Calculator.y"
                             {
         (yyval.node) = insert_ast_node((yyvsp[-1].node), (yyvsp[0].node));
     }
@@ -1164,7 +1164,7 @@ yyreduce:
     break;
 
   case 6: /* FuncDef: T_FUNC T_ID '(' ')' Block  */
-#line 76 "../Calculator.y"
+#line 76 "/root/calculator/frontend/flexbison/Calculator.y"
                                      {
         (yyval.node) = create_func_def((yyvsp[-3].var_id).lineno, (yyvsp[-3].var_id).id, (yyvsp[0].node), nullptr);
     }
@@ -1172,7 +1172,7 @@ yyreduce:
     break;
 
   case 7: /* FuncDef: T_FUNC T_ID '(' FuncFormalParams ')' Block  */
-#line 79 "../Calculator.y"
+#line 79 "/root/calculator/frontend/flexbison/Calculator.y"
                                                  {
         (yyval.node) = create_func_def((yyvsp[-4].var_id).lineno, (yyvsp[-4].var_id).id, (yyvsp[0].node), (yyvsp[-2].node));
     }
@@ -1180,7 +1180,7 @@ yyreduce:
     break;
 
   case 8: /* FuncFormalParams: FuncFormalParam  */
-#line 85 "../Calculator.y"
+#line 85 "/root/calculator/frontend/flexbison/Calculator.y"
                                     {
         (yyval.node) = create_contain_node(ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS, (yyvsp[0].node));
     }
@@ -1188,7 +1188,7 @@ yyreduce:
     break;
 
   case 9: /* FuncFormalParams: FuncFormalParams ',' FuncFormalParam  */
-#line 88 "../Calculator.y"
+#line 88 "/root/calculator/frontend/flexbison/Calculator.y"
                                            {
         (yyval.node) = insert_ast_node((yyvsp[-2].node), (yyvsp[0].node));
     }
@@ -1196,7 +1196,7 @@ yyreduce:
     break;
 
   case 10: /* FuncFormalParam: FuncBasicParam  */
-#line 94 "../Calculator.y"
+#line 94 "/root/calculator/frontend/flexbison/Calculator.y"
                                   {
         (yyval.node) = (yyvsp[0].node);
     }
@@ -1204,7 +1204,7 @@ yyreduce:
     break;
 
   case 11: /* FuncBasicParam: T_ID  */
-#line 100 "../Calculator.y"
+#line 100 "/root/calculator/frontend/flexbison/Calculator.y"
                       {
         (yyval.node) = create_func_formal_param((yyvsp[0].var_id).lineno, (yyvsp[0].var_id).id);
     }
@@ -1212,7 +1212,7 @@ yyreduce:
     break;
 
   case 12: /* Block: '{' '}'  */
-#line 106 "../Calculator.y"
+#line 106 "/root/calculator/frontend/flexbison/Calculator.y"
                 {
         // 语句块没有语句
         (yyval.node) = nullptr;
@@ -1221,7 +1221,7 @@ yyreduce:
     break;
 
   case 13: /* Block: '{' BlockItemList '}'  */
-#line 110 "../Calculator.y"
+#line 110 "/root/calculator/frontend/flexbison/Calculator.y"
                             {
         // 语句块含有语句
         (yyval.node) = (yyvsp[-1].node);
@@ -1230,7 +1230,7 @@ yyreduce:
     break;
 
   case 14: /* BlockItemList: BlockItem  */
-#line 117 "../Calculator.y"
+#line 117 "/root/calculator/frontend/flexbison/Calculator.y"
                           {
         // 第一个左侧的孩子节点归约成Block父节点，后续语句可不断作为孩子追加到block中
         // 创建一个AST_OP_BLOCK类型的中间节点，孩子为Statement($1)
@@ -1240,7 +1240,7 @@ yyreduce:
     break;
 
   case 15: /* BlockItemList: BlockItemList BlockItem  */
-#line 122 "../Calculator.y"
+#line 122 "/root/calculator/frontend/flexbison/Calculator.y"
                                {
         // 采用左递归的文法产生式，可以使得Block节点在上个产生式创建，后续递归追加孩子节点
         // 请注意，不要采用右递归，左递归翻遍孩子的追加
@@ -1251,7 +1251,7 @@ yyreduce:
     break;
 
   case 16: /* BlockItem: Statement  */
-#line 131 "../Calculator.y"
+#line 131 "/root/calculator/frontend/flexbison/Calculator.y"
                        {
         (yyval.node) = (yyvsp[0].node);
     }
@@ -1259,7 +1259,7 @@ yyreduce:
     break;
 
   case 17: /* Statement: T_ID '=' Expr ';'  */
-#line 137 "../Calculator.y"
+#line 137 "/root/calculator/frontend/flexbison/Calculator.y"
                               {
         // 归约到Statement时要执行的语义动作程序
         // 赋值语句，不显示值
@@ -1276,7 +1276,7 @@ yyreduce:
     break;
 
   case 18: /* Statement: Expr ';'  */
-#line 149 "../Calculator.y"
+#line 149 "/root/calculator/frontend/flexbison/Calculator.y"
                {
         // Expr归约到Statement时要执行的语义动作程序
         // 表达式语句，不显示表达式的值
@@ -1288,7 +1288,7 @@ yyreduce:
     break;
 
   case 19: /* Statement: Expr  */
-#line 156 "../Calculator.y"
+#line 156 "/root/calculator/frontend/flexbison/Calculator.y"
            {
         // Expr归约到Statement时要执行的语义动作程序
         // 表达式语句，需要显示表达式的值
@@ -1300,7 +1300,7 @@ yyreduce:
     break;
 
   case 20: /* Statement: T_RETURN Expr ';'  */
-#line 163 "../Calculator.y"
+#line 163 "/root/calculator/frontend/flexbison/Calculator.y"
                         {
         // 返回语句
         (yyval.node) = new_ast_node(ast_operator_type::AST_OP_RETURN_STATEMENT, (yyvsp[-1].node), nullptr);
@@ -1309,7 +1309,7 @@ yyreduce:
     break;
 
   case 21: /* Expr: AddExp  */
-#line 169 "../Calculator.y"
+#line 169 "/root/calculator/frontend/flexbison/Calculator.y"
               { 
         (yyval.node) = (yyvsp[0].node); 
     }
@@ -1317,7 +1317,7 @@ yyreduce:
     break;
 
   case 22: /* AddExp: AddExp T_ADD UnaryExp  */
-#line 175 "../Calculator.y"
+#line 175 "/root/calculator/frontend/flexbison/Calculator.y"
                                {
         /* Expr = Expr + Term */
 
@@ -1328,7 +1328,7 @@ yyreduce:
     break;
 
   case 23: /* AddExp: AddExp T_SUB UnaryExp  */
-#line 181 "../Calculator.y"
+#line 181 "/root/calculator/frontend/flexbison/Calculator.y"
                             {
         /* Expr = Expr + Term */
 
@@ -1339,7 +1339,7 @@ yyreduce:
     break;
 
   case 24: /* AddExp: UnaryExp  */
-#line 187 "../Calculator.y"
+#line 187 "/root/calculator/frontend/flexbison/Calculator.y"
                {
         /* Expr = Term */
         (yyval.node) = (yyvsp[0].node);
@@ -1348,7 +1348,7 @@ yyreduce:
     break;
 
   case 25: /* UnaryExp: PrimaryExp  */
-#line 193 "../Calculator.y"
+#line 193 "/root/calculator/frontend/flexbison/Calculator.y"
                       {
         (yyval.node) = (yyvsp[0].node);
     }
@@ -1356,7 +1356,7 @@ yyreduce:
     break;
 
   case 26: /* UnaryExp: T_ID '(' ')'  */
-#line 196 "../Calculator.y"
+#line 196 "/root/calculator/frontend/flexbison/Calculator.y"
                    {
         // 用户自定义的不含实参的函数调用
         (yyval.node) = create_func_call((yyvsp[-2].var_id).lineno, (yyvsp[-2].var_id).id, nullptr);
@@ -1365,7 +1365,7 @@ yyreduce:
     break;
 
   case 27: /* UnaryExp: T_ID '(' RealParamList ')'  */
-#line 200 "../Calculator.y"
+#line 200 "/root/calculator/frontend/flexbison/Calculator.y"
                                  {
         // 用户自定义的含有实参的参数调用
         (yyval.node) = create_func_call((yyvsp[-3].var_id).lineno, (yyvsp[-3].var_id).id, (yyvsp[-1].node));
@@ -1374,7 +1374,7 @@ yyreduce:
     break;
 
   case 28: /* PrimaryExp: '(' Expr ')'  */
-#line 205 "../Calculator.y"
+#line 205 "/root/calculator/frontend/flexbison/Calculator.y"
                            {
         /* PrimaryExp = Expr */
         (yyval.node) = (yyvsp[-1].node);
@@ -1383,7 +1383,7 @@ yyreduce:
     break;
 
   case 29: /* PrimaryExp: T_DIGIT  */
-#line 209 "../Calculator.y"
+#line 209 "/root/calculator/frontend/flexbison/Calculator.y"
               {
         // 无符号整数识别
 
@@ -1394,7 +1394,7 @@ yyreduce:
     break;
 
   case 30: /* PrimaryExp: LVal  */
-#line 215 "../Calculator.y"
+#line 215 "/root/calculator/frontend/flexbison/Calculator.y"
             {
         // 左值
         (yyval.node) = (yyvsp[0].node);
@@ -1403,7 +1403,7 @@ yyreduce:
     break;
 
   case 31: /* LVal: T_ID  */
-#line 221 "../Calculator.y"
+#line 221 "/root/calculator/frontend/flexbison/Calculator.y"
             {
         // 终结符作为抽象语法树的叶子节点进行创建
         (yyval.node) = new_ast_leaf_node(var_id_attr{(yyvsp[0].var_id).id, (yyvsp[0].var_id).lineno});
@@ -1415,7 +1415,7 @@ yyreduce:
     break;
 
   case 32: /* RealParamList: Expr  */
-#line 229 "../Calculator.y"
+#line 229 "/root/calculator/frontend/flexbison/Calculator.y"
                      {
         (yyval.node) = create_contain_node(ast_operator_type::AST_OP_FUNC_REAL_PARAMS, (yyvsp[0].node));
     }
@@ -1423,7 +1423,7 @@ yyreduce:
     break;
 
   case 33: /* RealParamList: RealParamList ',' Expr  */
-#line 232 "../Calculator.y"
+#line 232 "/root/calculator/frontend/flexbison/Calculator.y"
                              {
         (yyval.node) = insert_ast_node((yyvsp[-2].node), (yyvsp[0].node));
     }
@@ -1624,7 +1624,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 236 "../Calculator.y"
+#line 236 "/root/calculator/frontend/flexbison/Calculator.y"
 
 
 // 语法识别错误要调用函数的定义

@@ -506,8 +506,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "../Calculator.l"
-#line 2 "../Calculator.l"
+#line 1 "/root/calculator/frontend/flexbison/Calculator.l"
+#line 2 "/root/calculator/frontend/flexbison/Calculator.l"
 /* 这里声明语义动作符程序所需要的函数原型或者变量原型或定义等 */
 /* 主要包含头文件，extern的全局变量，定义的全局变量等 */
 
@@ -749,7 +749,7 @@ YY_DECL
 		}
 
 	{
-#line 45 "../Calculator.l"
+#line 45 "/root/calculator/frontend/flexbison/Calculator.l"
 
 #line 755 "CalculatorFlex.cpp"
 
@@ -816,7 +816,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 46 "../Calculator.l"
+#line 46 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // 进入注释子有限自动机
                 BEGIN(COMMENT);
@@ -824,7 +824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 51 "../Calculator.l"
+#line 51 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // 结束注释子有限自动机
                 BEGIN(INITIAL);
@@ -833,13 +833,13 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 56 "../Calculator.l"
+#line 56 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 ; // 注释子有限自动机中，忽略所有字符，含换行符等
             }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 60 "../Calculator.l"
+#line 60 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // 注释子有限自动机，没有遇到*/但是文件结束
                 printf("Line %d: Unterminated comment\n", yylineno);
@@ -851,14 +851,14 @@ case YY_STATE_EOF(COMMENT):
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 68 "../Calculator.l"
+#line 68 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 ; // 忽略行注释
             }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 72 "../Calculator.l"
+#line 72 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // 词法识别无符号整数，注意对于负数，则需要识别为负号和无符号数两个Token
                 yylval.integer_num.val = (uint32_t)strtol(yytext, (char **)NULL, 10);
@@ -868,7 +868,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 79 "../Calculator.l"
+#line 79 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // function作为关键字，作为特殊ID被预留
                 return T_FUNC;
@@ -876,7 +876,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 83 "../Calculator.l"
+#line 83 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 // return关键字
                 return T_RETURN;
@@ -884,7 +884,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 88 "../Calculator.l"
+#line 88 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 yylval.var_id.id = strdup(yytext);
                 yylval.var_id.lineno = yylineno;
@@ -893,63 +893,63 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 94 "../Calculator.l"
+#line 94 "/root/calculator/frontend/flexbison/Calculator.l"
 {return '(';}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 95 "../Calculator.l"
+#line 95 "/root/calculator/frontend/flexbison/Calculator.l"
 {return ')';}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 97 "../Calculator.l"
+#line 97 "/root/calculator/frontend/flexbison/Calculator.l"
 {return T_SUB;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 98 "../Calculator.l"
+#line 98 "/root/calculator/frontend/flexbison/Calculator.l"
 {return T_ADD;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 100 "../Calculator.l"
+#line 100 "/root/calculator/frontend/flexbison/Calculator.l"
 {return '=';}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 101 "../Calculator.l"
+#line 101 "/root/calculator/frontend/flexbison/Calculator.l"
 {return ';';}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 103 "../Calculator.l"
+#line 103 "/root/calculator/frontend/flexbison/Calculator.l"
 {return '{';}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 104 "../Calculator.l"
+#line 104 "/root/calculator/frontend/flexbison/Calculator.l"
 {return '}'; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 106 "../Calculator.l"
+#line 106 "/root/calculator/frontend/flexbison/Calculator.l"
 {return ','; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 108 "../Calculator.l"
+#line 108 "/root/calculator/frontend/flexbison/Calculator.l"
 ;
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 110 "../Calculator.l"
+#line 110 "/root/calculator/frontend/flexbison/Calculator.l"
 ;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 112 "../Calculator.l"
+#line 112 "/root/calculator/frontend/flexbison/Calculator.l"
 {
                 printf("Line %d: Invalid char %s\n", yylineno, yytext);
                 // 词法识别错误
@@ -958,7 +958,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 117 "../Calculator.l"
+#line 117 "/root/calculator/frontend/flexbison/Calculator.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 965 "CalculatorFlex.cpp"
@@ -1979,6 +1979,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 117 "../Calculator.l"
+#line 117 "/root/calculator/frontend/flexbison/Calculator.l"
 
 
