@@ -32,7 +32,7 @@ void yyerror(char * msg);
 // 对于单个字符的算符或者分隔符，在词法分析时可直返返回对应的字符即可
 %token <integer_num> T_DIGIT
 %token <var_id> T_ID
-%token T_FUNC T_RETURN T_ADD T_SUB
+%token T_FUNC T_RETURN T_ADD T_SUB T_MUL T_DIV T_MOD
 
 %type <node> CompileUnit
 
@@ -179,10 +179,16 @@ AddExp : AddExp T_ADD UnaryExp {
         $$ = new_ast_node(ast_operator_type::AST_OP_ADD, $1, $3, nullptr);
     }
     | AddExp T_SUB UnaryExp {
-        /* Expr = Expr + Term */
+        /* Expr = Expr - Term */
 
-        // 创建一个AST_OP_ADD类型的中间节点，孩子为Expr($1)和Term($3)
+        // 创建一个AST_OP_SUB类型的中间节点，孩子为Expr($1)和Term($3)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $1, $3, nullptr);
+    }
+    | T_SUB UnaryExp {
+        /* Expr = -Term */
+
+        // 创建一个AST_OP_SUB类型的中间节点，孩子为Term($2)
+        $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $2, nullptr);
     }
     | UnaryExp {
         /* Expr = Term */
