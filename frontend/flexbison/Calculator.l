@@ -109,6 +109,9 @@ white_line  [\r\n]
 
 "-"			{return T_SUB;}
 "+"			{return T_ADD;}
+"*"            {return T_MUL;}
+"/"            {return T_DIV;}
+"%"            {return T_MOD;}
 
 "="         {return '=';}
 ";"         {return ';';}

@@ -76,6 +76,14 @@ enum class ast_operator_type : int {
     /// @brief 文件编译单元运算符，可包含函数定义、语句块等孩子
     AST_OP_COMPILE_UNIT,
 
+    /// @brief 二元运算符*
+    AST_OP_MUL,
+
+    /// @brief 二元运算符/
+    AST_OP_DIV,
+
+    /// @brief 二元运算符%
+    AST_OP_MOD,
     // TODO 抽象语法树其它内部节点运算符追加
 
     /// @brief 最大标识符，表示非法运算符

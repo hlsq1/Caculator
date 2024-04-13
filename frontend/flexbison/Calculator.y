@@ -49,7 +49,7 @@ void yyerror(char * msg);
 
 %type <node> Statement
 %type <node> Expr
-%type <node> AddExp UnaryExp LVal
+%type <node> AddExp MulExp MinusExp UnaryExp LVal
 %type <node> PrimaryExp
 %type <node> RealParamList
 
@@ -171,30 +171,61 @@ Expr : AddExp {
     }
     ;
 
-/* 加法表达式 */
-AddExp : AddExp T_ADD UnaryExp {
+/* 加减法表达式 */
+AddExp : MulExp {
+		$$ = $1;
+	}
+	| AddExp T_ADD MulExp {
         /* Expr = Expr + Term */
 
         // 创建一个AST_OP_ADD类型的中间节点，孩子为Expr($1)和Term($3)
         $$ = new_ast_node(ast_operator_type::AST_OP_ADD, $1, $3, nullptr);
     }
-    | AddExp T_SUB UnaryExp {
+    | AddExp T_SUB MulExp {
         /* Expr = Expr - Term */
 
         // 创建一个AST_OP_SUB类型的中间节点，孩子为Expr($1)和Term($3)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $1, $3, nullptr);
     }
-    | T_SUB UnaryExp {
+	;
+
+/* 乘除法和取余表达式 */
+MulExp : MinusExp {
+		$$ = $1;
+	}
+	| MulExp T_MUL MinusExp {
+      	/* Expr = Expr * Term */
+
+		// 创建一个AST_OP_MUL类型的中间节点，孩子为Expr($1)和Term($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_MUL, $1, $3, nullptr);
+
+	}
+	| MulExp T_DIV MinusExp {
+        /* Expr = Expr / Term */
+
+		// 创建一个AST_OP_DIV类型的中间节点，孩子为Expr($1)和Term($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_DIV, $1, $3, nullptr);
+	}
+    | MulExp T_MOD MinusExp {
+        /* Expr = Expr % Term */
+
+		// 创建一个AST_OP_MOD类型的中间节点，孩子为Expr($1)和Term($3)
+		$$ = new_ast_node(ast_operator_type::AST_OP_MOD, $1, $3, nullptr);
+    }
+	;
+
+/* 求负表达式 */
+MinusExp :T_SUB UnaryExp {
         /* Expr = -Term */
 
         // 创建一个AST_OP_SUB类型的中间节点，孩子为Term($2)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $2, nullptr);
     }
-    | UnaryExp {
+	| UnaryExp {
         /* Expr = Term */
         $$ = $1;
     }
-    ;
+	;
 
 UnaryExp : PrimaryExp {
         $$ = $1;
@@ -207,6 +238,7 @@ UnaryExp : PrimaryExp {
         // 用户自定义的含有实参的参数调用
         $$ = create_func_call($1.lineno, $1.id, $3);
     }
+	;
 
 PrimaryExp :  '(' Expr ')' {
         /* PrimaryExp = Expr */
