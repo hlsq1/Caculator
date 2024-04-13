@@ -41,6 +41,18 @@ enum class IRInstOperator {
     /// @brief 函数调用，多目运算，个数不限
     IRINST_OP_FUNC_CALL,
 
+    /// @brief 整数的乘法指令，二元运算
+    IRINST_OP_MUL_I,
+
+    /// @brief 整数的除法指令，二元运算
+    IRINST_OP_DIV_I,
+
+    /// @brief 整数的余数指令，二元运算
+    IRINST_OP_MOD_I,
+
+    /// @brief 整数的取负指令，一元运算
+    IRINST_OP_MINUS_I,
+
     /* 后续可追加其他的IR指令 */
 
     /// @brief 最大指令码，也是无效指令
