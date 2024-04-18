@@ -51,7 +51,7 @@ enum class IRInstOperator {
     IRINST_OP_MOD_I,
 
     /// @brief 整数的取负指令，一元运算
-    IRINST_OP_MINUS_I,
+    IRINST_OP_NEG_I,
 
     /* 后续可追加其他的IR指令 */
 

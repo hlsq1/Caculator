@@ -86,7 +86,7 @@ protected:
 
     /// @brief 整数求负指令翻译成ARM32汇编
     /// @param inst IR指令
-    void translate_minus_int32(IRInst * inst);
+    void translate_neg_int32(IRInst * inst);
 
     /// @brief 二元操作指令翻译成ARM32汇编
     /// @param inst IR指令

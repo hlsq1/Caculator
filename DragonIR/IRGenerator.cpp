@@ -398,7 +398,7 @@ bool IRGenerator::ir_add(ast_node * node)
     return true;
 }
 
-/// @brief 整数减法AST节点翻译成线性中间IR
+/// @brief 整数减法和单目求负AST节点翻译成线性中间IR
 /// @param node AST节点
 /// @return 翻译是否成功，true：成功，false：失败
 bool IRGenerator::ir_sub(ast_node * node)
@@ -444,7 +444,7 @@ bool IRGenerator::ir_sub(ast_node * node)
 
         // 创建临时变量保存IR的值，以及线性IR指令
         node->blockInsts.addInst(son->blockInsts);
-        node->blockInsts.addInst(new BinaryIRInst(IRInstOperator::IRINST_OP_MINUS_I, resultValue, son->val));
+        node->blockInsts.addInst(new BinaryIRInst(IRInstOperator::IRINST_OP_NEG_I, resultValue, son->val));
         node->val = resultValue;
 
         return true;

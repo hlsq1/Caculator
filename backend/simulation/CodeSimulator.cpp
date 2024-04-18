@@ -34,7 +34,7 @@ CodeSimulator::CodeSimulator(SymbolTable & tab) : CodeGenerator(tab)
     calc_handlers[IRInstOperator::IRINST_OP_MUL_I] = &CodeSimulator::calc_mul_int32;
     calc_handlers[IRInstOperator::IRINST_OP_DIV_I] = &CodeSimulator::calc_div_int32;
     calc_handlers[IRInstOperator::IRINST_OP_MOD_I] = &CodeSimulator::calc_mod_int32;
-    calc_handlers[IRInstOperator::IRINST_OP_MINUS_I] = &CodeSimulator::calc_minus_int32;
+    calc_handlers[IRInstOperator::IRINST_OP_NEG_I] = &CodeSimulator::calc_neg_int32;
 
     calc_handlers[IRInstOperator::IRINST_OP_FUNC_CALL] = &CodeSimulator::calc_call;
 }
@@ -152,7 +152,7 @@ bool CodeSimulator::calc_mod_int32(IRInst * inst)
 
 /// @brief 整数求负指令计算
 /// @param inst IR中间指令
-bool CodeSimulator::calc_minus_int32(IRInst * inst)
+bool CodeSimulator::calc_neg_int32(IRInst * inst)
 {
     Value * destVal = inst->getDst();
     Value * srcVal1 = inst->getSrc1();

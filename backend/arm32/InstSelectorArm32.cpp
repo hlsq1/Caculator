@@ -37,7 +37,7 @@ InstSelectorArm32::InstSelectorArm32(vector<IRInst *> & _irCode, ILocArm32 & _il
     translator_handlers[IRInstOperator::IRINST_OP_MUL_I] = &InstSelectorArm32::translate_mul_int32;
     translator_handlers[IRInstOperator::IRINST_OP_DIV_I] = &InstSelectorArm32::translate_div_int32;
     translator_handlers[IRInstOperator::IRINST_OP_MOD_I] = &InstSelectorArm32::translate_mod_int32;
-    translator_handlers[IRInstOperator::IRINST_OP_MINUS_I] = &InstSelectorArm32::translate_minus_int32;
+    translator_handlers[IRInstOperator::IRINST_OP_NEG_I] = &InstSelectorArm32::translate_neg_int32;
 
     translator_handlers[IRInstOperator::IRINST_OP_FUNC_CALL] = &InstSelectorArm32::translate_call;
 }
@@ -320,9 +320,9 @@ void InstSelectorArm32::translate_mod_int32(IRInst * inst)
 
 /// @brief 整数求负指令翻译成ARM32汇编
 /// @param inst IR指令
-void InstSelectorArm32::translate_minus_int32(IRInst * inst)
+void InstSelectorArm32::translate_neg_int32(IRInst * inst)
 {
-    translate_one_operator(inst, "minus");
+    translate_one_operator(inst, "neg");
 }
 
 /// @brief 函数调用指令翻译成ARM32汇编

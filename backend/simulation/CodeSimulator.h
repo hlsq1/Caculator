@@ -67,7 +67,7 @@ protected:
 
     /// @brief 整数求负指令计算
     /// @param inst IR中间指令
-    bool calc_minus_int32(IRInst * inst);
+    bool calc_neg_int32(IRInst * inst);
 
     /// @brief GOTO指令计算
     /// @param inst IR中间指令

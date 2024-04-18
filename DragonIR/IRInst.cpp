@@ -167,10 +167,10 @@ void BinaryIRInst::toString(std::string & str)
             // 取余指令，二元运算
             str = result->getName() + " = mod " + src1->toString() + ", " + src2->toString();
             break;
-        case IRInstOperator::IRINST_OP_MINUS_I:
+        case IRInstOperator::IRINST_OP_NEG_I:
 
             // 取负指令，一元运算
-            str = result->getName() + " = minus " + src1->toString();
+            str = result->getName() + " = neg " + src1->toString();
             break;
 
         default:
