@@ -26,7 +26,7 @@
 			"type": "lldb",
 			"request": "launch",
 			"program": "${workspaceFolder}/cmake-build-debug/calculator",
-			"args": ["-S", "-I", "tests/mytest3.txt"],
+			"args": ["-S", "-I", "tests/test1-1.c"],
 			"cwd": "${workspaceFolder}",
 			// 不需要编译时可注释掉
 			"preLaunchTask": "CMake: build"
@@ -154,7 +154,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/cmake-build-debug/calculator",
-			"args": ["-R", "tests/test1.txt"],
+			"args": ["-R", "tests/test3.txt"],
 			// 程序的入口（main函数的入口）是否停止
 			"stopAtEntry": true,
 			"cwd": "${workspaceFolder}",

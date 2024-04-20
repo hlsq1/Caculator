@@ -52,6 +52,10 @@ bool CodeSimulator::calc_entry(IRInst * inst)
 bool CodeSimulator::calc_exit(IRInst * inst)
 {
     // TODO 函数调用支持时这里必须进行值的返回
+    if (this->Result) {
+        Value * srcVal = inst->getSrc1();
+        this->Result->intVal = srcVal->intVal;
+    }
 
     return true;
 }
@@ -170,9 +174,9 @@ bool CodeSimulator::calc_goto(IRInst * inst)
     // 无条件跳转指令
 
     // TODO 需要自己实现
-    printf("goto not support");
+    // printf("goto not support");
 
-    return false;
+    return true;
 }
 
 /// @brief 函数调用指令计算
@@ -188,6 +192,32 @@ bool CodeSimulator::calc_call(IRInst * inst)
         // 函数没有找到，则错误返回
         printf("Function(%s) not found\n", funcCallInst->name.c_str());
         return false;
+    } else if (!func->isBuiltin()) {
+        // 调用自定义函数，遍历函数内的指令进行解释执行
+        bool result = true;
+
+        //传递函数形参的值
+        std::vector<FuncFormalParam> & params = func->getParams();
+        std::vector<Value *> & srcvalues = inst->getSrc();
+        int k = 0;
+        for (auto & param: params) {
+            param.val->intVal = srcvalues[k]->intVal;
+            k++;
+        }
+
+        InterCode & irCode = func->getInterCode();
+        for (auto & inst: irCode.getInsts()) {
+            const IRInstOperator instOp = inst->getOp();
+            if (instOp == IRInstOperator::IRINST_OP_EXIT) {
+                this->Result = funcCallInst->getDst();
+            }
+            // 单条指令解释执行
+            result = IRInstCalc(inst);
+            if (!result) {
+                break;
+            }
+        }
+        return result;
     }
 
     // 目前支持内置函数

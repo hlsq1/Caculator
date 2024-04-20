@@ -86,4 +86,7 @@ protected:
 
     /// @brief IR动作解释执行指令清单
     std::unordered_map<IRInstOperator, calc_handler> calc_handlers;
+
+    /// @brief 保存自定义函数目的操作数
+    Value * Result = nullptr;
 };
