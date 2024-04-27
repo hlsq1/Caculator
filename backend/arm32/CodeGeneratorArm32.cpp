@@ -310,10 +310,14 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
 
     for (auto var: vars) {
 
-        // 对于简单类型的寄存器分配策略，临时变量都会用寄存器，这里需要忽略
-        // 而对于图着色等，临时变量可能会变更内存分配，这时应该调整类型
-        // if (var->isTemp())
-        //     continue;
+        // 对于简单类型的寄存器分配策略，假定临时变量和局部变量都保存在栈中，属于内存
+        // 而对于图着色等，临时变量一般是寄存器，局部变量也可能修改为寄存器
+        // TODO 考虑如何进行分配使得临时变量尽量保存在寄存器中，作为优化点考虑
+#if 0
+        if (var->isTemp()) {
+            continue;
+		}
+#endif
 
         if ((var->regId == -1) && (var->baseRegNo == -1)) {
 

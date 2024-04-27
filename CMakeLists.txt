@@ -233,6 +233,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD_REQUIRED ON
 )
 
+# # LLDB调试运行时string不能显示，这是由于clang默认优化时减少调试信息导致的，因此这里指定选项不要优化调试信息
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+	target_compile_options(${PROJECT_NAME} PRIVATE -fstandalone-debug)
+endif()
+
 # -Wno-unused-function避免无用函数警告
 # -Wno-write-strings避免c++提示字符串常量转换char*的警告
 # -Werror强制警告当作错误处理

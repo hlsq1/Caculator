@@ -67,17 +67,6 @@ bool IRGenerator::ir_compile_unit(ast_node * node)
     symtab->mainFunc = symtab->newFunction("main", BasicType::TYPE_INT);
     symtab->currentFunc = symtab->mainFunc;
 
-    for (auto son: node->sons) {
-
-        // 遍历编译单元，要么是函数定义，要么是语句
-        ast_node * son_node = ir_visit_ast_node(son);
-        if (!son_node) {
-            return false;
-        }
-
-        node->blockInsts.addInst(son_node->blockInsts);
-    }
-
     // 获取函数的IR代码列表，用于后面追加指令用，注意这里用的是引用传值
     InterCode & irCode = symtab->currentFunc->getInterCode();
 
@@ -89,11 +78,19 @@ bool IRGenerator::ir_compile_unit(ast_node * node)
     symtab->currentFunc->setExitLabel(exitLabelInst);
 
     // 新建一个Value，用于保存函数的返回值，如果没有返回值可不用申请，
-    // 目前不需要
-#if 0
     Value * retValue = symtab->currentFunc->newVarValue(BasicType::TYPE_INT);
     symtab->currentFunc->setReturnValue(retValue);
-#endif
+
+    for (auto son: node->sons) {
+
+        // 遍历编译单元，要么是函数定义，要么是语句
+        ast_node * son_node = ir_visit_ast_node(son);
+        if (!son_node) {
+            return false;
+        }
+
+        node->blockInsts.addInst(son_node->blockInsts);
+    }
 
     // 除了函数定义的指令外都加入到main函数的指令当中
     irCode.addInst(node->blockInsts);
