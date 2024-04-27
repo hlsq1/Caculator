@@ -312,8 +312,8 @@ void CodeGeneratorArm32::stackAlloc(Function * func)
 
         // 对于简单类型的寄存器分配策略，临时变量都会用寄存器，这里需要忽略
         // 而对于图着色等，临时变量可能会变更内存分配，这时应该调整类型
-        if (var->isTemp())
-            continue;
+        // if (var->isTemp())
+        //     continue;
 
         if ((var->regId == -1) && (var->baseRegNo == -1)) {
 

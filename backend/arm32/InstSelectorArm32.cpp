@@ -308,14 +308,17 @@ void InstSelectorArm32::translate_mul_int32(IRInst * inst)
 /// @param inst IR指令
 void InstSelectorArm32::translate_div_int32(IRInst * inst)
 {
-    translate_two_operator(inst, "div");
+    translate_two_operator(inst, "sdiv");
 }
 
 /// @brief 整数取余指令翻译成ARM32汇编
 /// @param inst IR指令
 void InstSelectorArm32::translate_mod_int32(IRInst * inst)
 {
-    translate_two_operator(inst, "mod");
+    // translate_two_operator(inst, "mod");
+    translate_two_operator(inst, "sdiv");
+    translate_two_operator(inst, "mul");
+    translate_two_operator(inst, "sub");
 }
 
 /// @brief 整数求负指令翻译成ARM32汇编

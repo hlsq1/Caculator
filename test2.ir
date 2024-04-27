@@ -1,0 +1,19 @@
+i32 main()
+{
+	entry
+	%t0 = mul i32 1, i32 2
+	a = i32 %t0
+	%t1 = div i32 3, i32 1
+	b = i32 %t1
+	%t2 = mod i32 8, i32 2
+	c = i32 %t2
+	%t3 = neg i32 1
+	%t4 = mul i32 %t3, i32 2
+	d = i32 %t4
+	call void @putint(i32 a)
+	call void @putint(i32 b)
+	call void @putint(i32 c)
+	call void @putint(i32 d)
+L0:
+	exit i32 0
+}

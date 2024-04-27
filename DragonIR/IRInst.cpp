@@ -160,7 +160,7 @@ void BinaryIRInst::toString(std::string & str)
         case IRInstOperator::IRINST_OP_DIV_I:
 
             // 除法指令，二元运算
-            str = result->getName() + " = div " + src1->toString() + ", " + src2->toString();
+            str = result->getName() + " = sdiv " + src1->toString() + ", " + src2->toString();
             break;
         case IRInstOperator::IRINST_OP_MOD_I:
 
