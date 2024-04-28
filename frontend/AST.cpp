@@ -226,6 +226,28 @@ ast_node * create_func_def(uint32_t line_no, const char * func_name, ast_node * 
     return node;
 }
 
+/// @brief 创建变量定义类型的内部AST节点
+/// @param line_no 行号
+/// @param var_name 变量名
+/// @param value 变量初始值，可以没有值
+/// @return 创建的节点
+ast_node * create_var_decl(uint32_t line_no, const char * var_name, ast_node * var_type, ast_node * value)
+{
+    ast_node * node = new ast_node(ast_operator_type::AST_OP_VAR_DECL, line_no);
+    node->type.type = BasicType::TYPE_INT;
+    node->name = var_name;
+
+    node->sons.push_back(var_type);
+    var_type->parent = node;
+
+    if (value) {
+        node->sons.push_back(value);
+        value->parent = node;
+    }
+
+    return node;
+}
+
 /// @brief 创建函数形式参数的节点
 /// @param line_no 行号
 /// @param param_name 参数名

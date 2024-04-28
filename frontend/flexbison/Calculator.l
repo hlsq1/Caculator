@@ -93,6 +93,17 @@ white_line  [\r\n]
                 // function作为关键字，作为特殊ID被预留
                 return T_FUNC;
             }
+
+"void" 	  {
+				// 函数定义关键字
+	    		return T_VOID;
+    		}
+
+"int"	{
+				// 函数和变量定义关键字
+				return T_INT;
+			}
+
 "return"    {
                 // return关键字
                 return T_RETURN;
@@ -112,6 +123,12 @@ white_line  [\r\n]
 "*"            {return T_MUL;}
 "/"            {return T_DIV;}
 "%"            {return T_MOD;}
+"<="		{return T_LE;}
+"<"			{return T_LT;}
+">"         {return T_GT;}
+">="		{return T_GE;}
+"!="		{return T_NE;}
+"=="        {return T_EQ;}
 
 "="         {return '=';}
 ";"         {return ';';}

@@ -84,6 +84,30 @@ enum class ast_operator_type : int {
 
     /// @brief 二元运算符%
     AST_OP_MOD,
+
+    /// @brief 变量定义类型
+    AST_OP_VAR_DECL,
+
+    /// @brief 小于等于运算符
+    AST_OP_LE,
+
+    /// @brief 小于运算符
+    AST_OP_LT,
+
+    /// @brief 大于运算符
+    AST_OP_GT,
+
+    /// @brief 大于等于运算符
+    AST_OP_GE,
+
+    /// @brief 不等于运算符
+    AST_OP_NE,
+
+    /// @brief 等于运算符
+    AST_OP_EQ,
+
+    /// @brief int类型
+    AST_OP_TYPE_INT,
     // TODO 抽象语法树其它内部节点运算符追加
 
     /// @brief 最大标识符，表示非法运算符
@@ -196,6 +220,13 @@ extern ast_node * ast_root;
 /// @param params 函数形参，可以没有参数
 /// @return 创建的节点
 ast_node * create_func_def(uint32_t line_no, const char * func_name, ast_node * block, ast_node * params = nullptr);
+
+/// @brief 创建变量定义类型的内部AST节点
+/// @param line_no 行号
+/// @param var_name 变量名
+/// @param value 变量初始值，可以没有值
+/// @return 创建的节点
+ast_node * create_var_decl(uint32_t line_no, const char * var_name, ast_node * var_type, ast_node * value = nullptr);
 
 /// @brief 创建函数形式参数的节点
 /// @param line_no 行号

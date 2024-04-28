@@ -32,7 +32,7 @@ void yyerror(char * msg);
 // 对于单个字符的算符或者分隔符，在词法分析时可直返返回对应的字符即可
 %token <integer_num> T_DIGIT
 %token <var_id> T_ID
-%token T_FUNC T_RETURN T_ADD T_SUB T_MUL T_DIV T_MOD
+%token T_FUNC T_RETURN T_ADD T_SUB T_MUL T_DIV T_MOD T_VOID T_INT T_LE T_LT T_GT T_GE  T_NE T_EQ
 
 %type <node> CompileUnit
 
@@ -43,6 +43,8 @@ void yyerror(char * msg);
 
 %type <node> FuncFormalParam
 %type <node> FuncBasicParam
+
+%type <node> VarDecl
 
 %type <node> BlockItemList
 %type <node> BlockItem
@@ -79,6 +81,36 @@ FuncDef : T_FUNC T_ID '(' ')' Block  {
     | T_FUNC T_ID '(' FuncFormalParams ')' Block {
         $$ = create_func_def($2.lineno, $2.id, $6, $4);
     }
+	| T_VOID T_ID '(' ')' Block  {
+        $$ = create_func_def($2.lineno, $2.id, $5, nullptr);
+    }
+	| T_VOID T_ID '(' FuncFormalParams ')' Block {
+        $$ = create_func_def($2.lineno, $2.id, $6, $4);
+    }
+	| T_INT T_ID '(' ')' Block  {
+        $$ = create_func_def($2.lineno, $2.id, $5, nullptr);
+    }
+	| T_INT T_ID '(' FuncFormalParams ')' Block {
+        $$ = create_func_def($2.lineno, $2.id, $6, $4);
+    }
+	| T_FUNC T_ID '(' ')' ';' {
+        $$ = create_func_def($2.lineno, $2.id, nullptr);
+    }
+	| T_FUNC T_ID '(' FuncFormalParams ')' ';' {
+        $$ = create_func_def($2.lineno, $2.id, $4);
+    }
+	| T_VOID T_ID '(' ')' ';'  {
+        $$ = create_func_def($2.lineno, $2.id, nullptr);
+    }
+	| T_VOID T_ID '(' FuncFormalParams ')' ';' {
+        $$ = create_func_def($2.lineno, $2.id, $4);
+    }
+	| T_INT T_ID '(' ')' ';'  {
+        $$ = create_func_def($2.lineno, $2.id, nullptr);
+    }
+	| T_INT T_ID '(' FuncFormalParams ')' ';' {
+        $$ = create_func_def($2.lineno, $2.id, $4);
+    }
     ;
 
 // 函数参数
@@ -91,8 +123,8 @@ FuncFormalParams : FuncFormalParam  {
     ;
 
 // 函数参数，目前只支持基本类型参数
-FuncFormalParam : FuncBasicParam  {
-        $$ = $1;
+FuncFormalParam : T_INT FuncBasicParam  {
+        $$ = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, $2, nullptr);
     }
     ;
 
@@ -164,8 +196,26 @@ Statement : T_ID '=' Expr ';' {
         // 返回语句
         $$ = new_ast_node(ast_operator_type::AST_OP_RETURN_STATEMENT, $2, nullptr);
     }
+	| VarDecl {
+		$$ = $1;
+	}
     ;
 
+/* 变量定义 */
+VarDecl : T_INT T_ID ';'{
+		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
+        $$ = create_var_decl($2.lineno, $2.id, type_node);
+    }
+	| T_INT T_ID '=' Expr ';'{
+		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
+		ast_node * id_node = new_ast_leaf_node(var_id_attr{$2.id, $2.lineno});
+
+        // 创建一个AST_OP_ASSIGN类型的中间节点，孩子为Id和Expr($3)
+        ast_node * assign_node = new_ast_node(ast_operator_type::AST_OP_ASSIGN, id_node, $4, nullptr);
+		$$ = create_var_decl($2.lineno, $2.id, type_node, assign_node);
+	}
+
+/* 表达式 */
 Expr : AddExp {
         $$ = $1;
     }
@@ -186,6 +236,42 @@ AddExp : MulExp {
 
         // 创建一个AST_OP_SUB类型的中间节点，孩子为Expr($1)和Term($3)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $1, $3, nullptr);
+    }
+	| AddExp T_LE MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_T_LE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_LE, $1, $3, nullptr);
+    }
+	| AddExp T_LT MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_LT类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_LT, $1, $3, nullptr);
+    }
+	| AddExp T_GT MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_GT类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_GT, $1, $3, nullptr);
+    }
+	| AddExp T_GE MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_GE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_GE, $1, $3, nullptr);
+    }
+	| AddExp T_NE MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_NE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_NE, $1, $3, nullptr);
+    }
+	| AddExp T_EQ MulExp {
+        /* Expr = Expr + MulExp */
+
+        // 创建一个AST_OP_ADD类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_EQ, $1, $3, nullptr);
     }
 	;
 
@@ -263,6 +349,7 @@ LVal : T_ID {
 		// 对于字符型字面量的字符串空间需要释放，因词法用到了strdup进行了字符串复制
 		free($1.id);
     }
+
 /* 实参列表 */
 RealParamList : Expr {
         $$ = create_contain_node(ast_operator_type::AST_OP_FUNC_REAL_PARAMS, $1);
