@@ -2,10 +2,10 @@
 // 如果不追加原型，编译时需通过--include选型指定头文件忽略警告
 
 int putint(int a, int b);
-int g = 3;
+int c = 3;
 int main()
 {
-    int b;
+    int a, b, c = 1 + 2, d = c + 1;
     int a = b + 3;
 
     putint(b);

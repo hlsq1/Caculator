@@ -45,6 +45,7 @@ void yyerror(char * msg);
 %type <node> FuncBasicParam
 
 %type <node> VarDecl
+%type <node> VarDecls
 
 %type <node> BlockItemList
 %type <node> BlockItem
@@ -76,6 +77,8 @@ CompileUnit : FuncDef {
 
 // 函数定义
 FuncDef : T_FUNC T_ID '(' ')' Block  {
+		// 这里由于函数返回值类型和变量定义类型的识别会有冲突，所以不能把类型单独处理
+
         $$ = create_func_def($2.lineno, $2.id, $5, nullptr);
     }
     | T_FUNC T_ID '(' FuncFormalParams ')' Block {
@@ -124,6 +127,9 @@ FuncFormalParams : FuncFormalParam  {
 
 // 函数参数，目前只支持基本类型参数
 FuncFormalParam : T_INT FuncBasicParam  {
+		// 目前只支持int类型的变量，所以这里直接识别int
+
+		//创建int类型的节点
         $$ = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, $2, nullptr);
     }
     ;
@@ -165,6 +171,7 @@ BlockItem : Statement  {
     }
     ;
 
+
 /* 语句 */
 Statement : T_ID '=' Expr ';' {
         // 归约到Statement时要执行的语义动作程序
@@ -196,21 +203,40 @@ Statement : T_ID '=' Expr ';' {
         // 返回语句
         $$ = new_ast_node(ast_operator_type::AST_OP_RETURN_STATEMENT, $2, nullptr);
     }
-	| VarDecl {
+	| VarDecls ';'{
 		$$ = $1;
 	}
     ;
 
+
+VarDecls : VarDecl {
+		$$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECLS, $1);
+	}
+	| VarDecls ',' T_ID {
+		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
+        ast_node * var_node = create_var_decl($3.lineno, $3.id, type_node);
+		$$ = insert_ast_node($1, var_node);
+	}
+	| VarDecls ',' T_ID '=' Expr {
+		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
+		ast_node * id_node = new_ast_leaf_node(var_id_attr{$3.id, $3.lineno});
+
+        // 创建一个AST_OP_ASSIGN类型的中间节点，孩子为Id和Expr($4)
+        ast_node * assign_node = new_ast_node(ast_operator_type::AST_OP_ASSIGN, id_node, $5, nullptr);
+		ast_node * var_node = create_var_decl($3.lineno, $3.id, type_node, assign_node);
+		$$ = insert_ast_node($1, var_node);
+	}
+
 /* 变量定义 */
-VarDecl : T_INT T_ID ';'{
+VarDecl : T_INT T_ID {
 		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
         $$ = create_var_decl($2.lineno, $2.id, type_node);
     }
-	| T_INT T_ID '=' Expr ';'{
+	| T_INT T_ID '=' Expr {
 		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
 		ast_node * id_node = new_ast_leaf_node(var_id_attr{$2.id, $2.lineno});
 
-        // 创建一个AST_OP_ASSIGN类型的中间节点，孩子为Id和Expr($3)
+        // 创建一个AST_OP_ASSIGN类型的中间节点，孩子为Id和Expr($4)
         ast_node * assign_node = new_ast_node(ast_operator_type::AST_OP_ASSIGN, id_node, $4, nullptr);
 		$$ = create_var_decl($2.lineno, $2.id, type_node, assign_node);
 	}
