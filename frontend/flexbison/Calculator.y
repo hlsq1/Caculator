@@ -32,7 +32,7 @@ void yyerror(char * msg);
 // 对于单个字符的算符或者分隔符，在词法分析时可直返返回对应的字符即可
 %token <integer_num> T_DIGIT
 %token <var_id> T_ID
-%token T_FUNC T_RETURN T_ADD T_SUB T_MUL T_DIV T_MOD T_VOID T_INT T_LE T_LT T_GT T_GE  T_NE T_EQ
+%token T_FUNC T_RETURN T_ADD T_SUB T_MUL T_DIV T_MOD T_VOID T_INT T_LE T_LT T_GT T_GE T_NE T_EQ T_AND T_NOT T_IF T_ELSE T_WHILE
 
 %type <node> CompileUnit
 
@@ -40,6 +40,9 @@ void yyerror(char * msg);
 %type <node> FuncDef
 %type <node> FuncFormalParams
 %type <node> Block
+
+%type <node> IfStatement
+%type <node> WhileStatement
 
 %type <node> FuncFormalParam
 %type <node> FuncBasicParam
@@ -52,7 +55,7 @@ void yyerror(char * msg);
 
 %type <node> Statement
 %type <node> Expr
-%type <node> AddExp MulExp MinusExp UnaryExp LVal
+%type <node> AndExp CmpExp AddExp MulExp MinusExp UnaryExp LVal
 %type <node> PrimaryExp
 %type <node> RealParamList
 
@@ -116,6 +119,8 @@ FuncDef : T_FUNC T_ID '(' ')' Block  {
     }
     ;
 
+
+
 // 函数参数
 FuncFormalParams : FuncFormalParam  {
         $$ = create_contain_node(ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS, $1);
@@ -140,6 +145,33 @@ FuncBasicParam : T_ID {
     }
     ;
 
+// if语句
+IfStatement : T_IF '(' Expr ')' Block{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, nullptr);
+	}
+	| T_IF '(' Expr ')' Block T_ELSE Block{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, $7, nullptr);
+	}
+	| T_IF '(' Expr ')' Statement{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, nullptr);
+	}
+	| T_IF '(' Expr ')' Statement T_ELSE Statement{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, $7, nullptr);
+	}
+
+// while语句
+WhileStatement : T_WHILE '(' Expr ')' Block{
+		//创建while语句节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_WHILE, $3, $5, nullptr);
+	}
+	| T_WHILE '(' Expr ')' Statement{
+		//创建while语句节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_WHILE, $3, $5, nullptr);
+	}
 // 语句块
 Block : '{' '}' {
         // 语句块没有语句
@@ -166,9 +198,16 @@ BlockItemList : BlockItem {
     ;
 
 // 目前语句块内项目只能是语句
+// 语句块内的项目新增if语句和while语句，这样还可以保证他们一定在函数块内
 BlockItem : Statement  {
         $$ = $1;
     }
+	| IfStatement {
+		$$ = $1;
+	}
+	| WhileStatement {
+		$$ = $1;
+	}
     ;
 
 
@@ -208,7 +247,7 @@ Statement : T_ID '=' Expr ';' {
 	}
     ;
 
-
+/* 变量列表 */
 VarDecls : VarDecl {
 		$$ = create_contain_node(ast_operator_type::AST_OP_VAR_DECLS, $1);
 	}
@@ -242,10 +281,61 @@ VarDecl : T_INT T_ID {
 	}
 
 /* 表达式 */
-Expr : AddExp {
+Expr : AndExp {
         $$ = $1;
     }
     ;
+
+
+/* 布尔与表达式 */
+AndExp : CmpExp {
+        $$ = $1;
+    }
+	| AndExp T_AND CmpExp {
+		// 创建一个AST_OP_AND类型的中间节点，孩子为AndExp和CmpExp
+		$$ = new_ast_node(ast_operator_type::AST_OP_AND, $1, $3, nullptr);
+    }
+
+/* 关系表达式 */
+CmpExp : AddExp {
+        $$ = $1;
+    }
+	| CmpExp T_LE AddExp {
+        /* Expr = Expr <= MulExp */
+
+        // 创建一个AST_OP_T_LE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_LE, $1, $3, nullptr);
+    }
+	| CmpExp T_LT AddExp {
+        /* Expr = Expr < MulExp */
+
+        // 创建一个AST_OP_LT类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_LT, $1, $3, nullptr);
+    }
+	| CmpExp T_GT AddExp {
+        /* Expr = Expr > MulExp */
+
+        // 创建一个AST_OP_GT类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_GT, $1, $3, nullptr);
+    }
+	| CmpExp T_GE AddExp {
+        /* Expr = Expr >= MulExp */
+
+        // 创建一个AST_OP_GE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_GE, $1, $3, nullptr);
+    }
+	| CmpExp T_NE AddExp {
+        /* Expr = Expr != MulExp */
+
+        // 创建一个AST_OP_NE类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_NE, $1, $3, nullptr);
+    }
+	| CmpExp T_EQ AddExp {
+        /* Expr = Expr = MulExp */
+
+        // 创建一个AST_OP_EQ类型的中间节点，孩子为Expr($1)和MulExp($3)
+        $$ = new_ast_node(ast_operator_type::AST_OP_EQ, $1, $3, nullptr);
+    }
 
 /* 加减法表达式 */
 AddExp : MulExp {
@@ -262,42 +352,6 @@ AddExp : MulExp {
 
         // 创建一个AST_OP_SUB类型的中间节点，孩子为Expr($1)和Term($3)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $1, $3, nullptr);
-    }
-	| AddExp T_LE MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_T_LE类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_LE, $1, $3, nullptr);
-    }
-	| AddExp T_LT MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_LT类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_LT, $1, $3, nullptr);
-    }
-	| AddExp T_GT MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_GT类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_GT, $1, $3, nullptr);
-    }
-	| AddExp T_GE MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_GE类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_GE, $1, $3, nullptr);
-    }
-	| AddExp T_NE MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_NE类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_NE, $1, $3, nullptr);
-    }
-	| AddExp T_EQ MulExp {
-        /* Expr = Expr + MulExp */
-
-        // 创建一个AST_OP_ADD类型的中间节点，孩子为Expr($1)和MulExp($3)
-        $$ = new_ast_node(ast_operator_type::AST_OP_EQ, $1, $3, nullptr);
     }
 	;
 
@@ -333,6 +387,12 @@ MinusExp :T_SUB UnaryExp {
         // 创建一个AST_OP_SUB类型的中间节点，孩子为Term($2)
         $$ = new_ast_node(ast_operator_type::AST_OP_SUB, $2, nullptr);
     }
+	| T_NOT UnaryExp {
+		/* Expr = !Term */
+
+        // 创建一个AST_OP_NOT类型的中间节点，孩子为Term($2)
+		$$ = new_ast_node(ast_operator_type::AST_OP_NOT, $2, nullptr);
+	}
 	| UnaryExp {
         /* Expr = Term */
         $$ = $1;

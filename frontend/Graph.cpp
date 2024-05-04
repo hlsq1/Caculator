@@ -110,6 +110,18 @@ string getNodeName(ast_node * astnode)
         case ast_operator_type::AST_OP_VAR_DECLS:
             nodeName = "Vars";
             break;
+        case ast_operator_type::AST_OP_AND:
+            nodeName = "and";
+            break;
+        case ast_operator_type::AST_OP_NOT:
+            nodeName = "not";
+            break;
+        case ast_operator_type::AST_OP_IF:
+            nodeName = "if";
+            break;
+        case ast_operator_type::AST_OP_WHILE:
+            nodeName = "while";
+            break;
             // TODO 这里追加其它类型的结点，返回对应结点的字符串
 
         default:

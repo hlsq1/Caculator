@@ -111,6 +111,18 @@ enum class ast_operator_type : int {
 
     /// @brief 多个变量定义列表
     AST_OP_VAR_DECLS,
+
+    /// @brief 逻辑与运算符
+    AST_OP_AND,
+
+    /// @brief 逻辑非运算符
+    AST_OP_NOT,
+
+    /// @brief if语句运算符
+    AST_OP_IF,
+
+    /// @brief while语句运算符
+    AST_OP_WHILE,
     // TODO 抽象语法树其它内部节点运算符追加
 
     /// @brief 最大标识符，表示非法运算符

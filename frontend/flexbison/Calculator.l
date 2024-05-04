@@ -104,6 +104,21 @@ white_line  [\r\n]
 				return T_INT;
 			}
 
+"if"	{
+				// if关键字
+				return T_IF;
+			}
+
+"else"	{
+				// else关键字
+				return T_ELSE;
+			}
+
+"while"	{
+				// while关键字
+				return T_WHILE;
+			}
+
 "return"    {
                 // return关键字
                 return T_RETURN;
@@ -129,6 +144,8 @@ white_line  [\r\n]
 ">="		{return T_GE;}
 "!="		{return T_NE;}
 "=="        {return T_EQ;}
+"&&"        {return T_AND;}
+"!"			{return T_NOT;}
 
 "="         {return '=';}
 ";"         {return ';';}
