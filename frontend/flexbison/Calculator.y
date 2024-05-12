@@ -58,6 +58,7 @@ void yyerror(char * msg);
 %type <node> AndExp CmpExp AddExp MulExp MinusExp UnaryExp LVal
 %type <node> PrimaryExp
 %type <node> RealParamList
+%type <node> Array
 
 %%
 
@@ -162,6 +163,14 @@ IfStatement : T_IF '(' Expr ')' Block{
 		//创建if语句的节点
 		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, $7, nullptr);
 	}
+	| T_IF '(' Expr ')' Block T_ELSE Statement{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, $7, nullptr);
+	}
+	| T_IF '(' Expr ')' Statement T_ELSE Block{
+		//创建if语句的节点
+		$$ = new_ast_node(ast_operator_type::AST_OP_IF, $3, $5, $7, nullptr);
+	}
 
 // while语句
 WhileStatement : T_WHILE '(' Expr ')' Block{
@@ -189,7 +198,19 @@ BlockItemList : BlockItem {
         // 创建一个AST_OP_BLOCK类型的中间节点，孩子为Statement($1)
         $$ = new_ast_node(ast_operator_type::AST_OP_BLOCK, $1, nullptr);
     }
+	| '{' BlockItem '}' {
+		// 大括号区分局部变量的定义域
+
+		// 创建一个AST_OP_BLOCK类型的中间节点，孩子为Statement($1)
+        $$ = new_ast_node(ast_operator_type::AST_OP_BLOCK, $1, nullptr);
+    }
     | BlockItemList BlockItem  {
+        // 采用左递归的文法产生式，可以使得Block节点在上个产生式创建，后续递归追加孩子节点
+        // 请注意，不要采用右递归，左递归翻遍孩子的追加
+        // BlockItem($2)作为Block($1)的孩子 
+        $$ = insert_ast_node($1, $2);
+    }
+    | BlockItemList '{' BlockItem '}' {
         // 采用左递归的文法产生式，可以使得Block节点在上个产生式创建，后续递归追加孩子节点
         // 请注意，不要采用右递归，左递归翻遍孩子的追加
         // BlockItem($2)作为Block($1)的孩子 
@@ -265,6 +286,13 @@ VarDecls : VarDecl {
 		ast_node * var_node = create_var_decl($3.lineno, $3.id, type_node, assign_node);
 		$$ = insert_ast_node($1, var_node);
 	}
+	| VarDecls ',' T_ID Array {
+		// 创建一个数组节点
+
+		ast_node * id_node = new_ast_leaf_node(var_id_attr{$3.id, $3.lineno});
+		ast_node * array = new_ast_node(ast_operator_type::AST_OP_VAR_DECL, id_node, $4, nullptr);
+		$$ = insert_ast_node($1, array);
+	}
 
 /* 变量定义 */
 VarDecl : T_INT T_ID {
@@ -279,6 +307,25 @@ VarDecl : T_INT T_ID {
         ast_node * assign_node = new_ast_node(ast_operator_type::AST_OP_ASSIGN, id_node, $4, nullptr);
 		$$ = create_var_decl($2.lineno, $2.id, type_node, assign_node);
 	}
+	| T_INT T_ID Array{
+        // 创建数组节点
+		ast_node * id_node = new_ast_leaf_node(var_id_attr{$2.id, $2.lineno});
+		$$ = new_ast_node(ast_operator_type::AST_OP_VAR_DECL, $3, id_node, nullptr);
+    }
+	;
+
+/* 定义数组 */
+Array : '[' T_DIGIT ']' {
+        // 创建数组节点
+		ast_node * type_node = new_ast_node(ast_operator_type::AST_OP_TYPE_INT, nullptr);
+		ast_node * digit_node = new_ast_leaf_node(digit_int_attr{$2.val, $2.lineno});
+		$$ = new_ast_node(ast_operator_type::AST_OP_ARRAY_DECL, digit_node, type_node, nullptr);
+    }
+    | '[' T_DIGIT ']' Array {
+		// 多维数组
+		ast_node * digit_node = new_ast_leaf_node(digit_int_attr{$2.val, $2.lineno});
+		$$ = new_ast_node(ast_operator_type::AST_OP_ARRAY_DECL, digit_node, $4, nullptr);
+    }
 
 /* 表达式 */
 Expr : AndExp {

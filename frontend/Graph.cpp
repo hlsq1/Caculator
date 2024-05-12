@@ -102,7 +102,10 @@ string getNodeName(ast_node * astnode)
             nodeName = "!=";
             break;
         case ast_operator_type::AST_OP_VAR_DECL:
-            nodeName = "VarDecl:" + astnode->name;
+            if (astnode->name == "")
+                nodeName = "VarDecl";
+            else
+                nodeName = "VarDecl:" + astnode->name;
             break;
         case ast_operator_type::AST_OP_TYPE_INT:
             nodeName = "int";
@@ -121,6 +124,9 @@ string getNodeName(ast_node * astnode)
             break;
         case ast_operator_type::AST_OP_WHILE:
             nodeName = "while";
+            break;
+        case ast_operator_type::AST_OP_ARRAY_DECL:
+            nodeName = "array";
             break;
             // TODO 这里追加其它类型的结点，返回对应结点的字符串
 

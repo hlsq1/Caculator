@@ -132,6 +132,8 @@ white_line  [\r\n]
 
 "("			{return '(';}
 ")"			{return ')';}
+"["			{return '[';}
+"]"			{return ']';}
 
 "-"			{return T_SUB;}
 "+"			{return T_ADD;}
