@@ -17,6 +17,7 @@ enum class BasicType : int {
     TYPE_NONE,  // 节点不存在类型
     TYPE_VOID,  // void型，仅用于函数返回值
     TYPE_INT,   // 整型
+    TYPE_BOOL,  // Bool类型
     TYPE_FLOAT, // Float类型
     TYPE_MAX,   // 其它类型，未知类型
 };

@@ -180,6 +180,61 @@ void BinaryIRInst::toString(std::string & str)
     }
 }
 
+/// @brief 构造函数
+/// @param _op 操作符
+/// @param _result 结果操作数
+/// @param _srcVal1 源操作数1
+/// @param _srcVal2 源操作数2
+CompareIRInst::CompareIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1, Value * _srcVal2)
+    : IRInst(_op, _result)
+{
+    srcValues.push_back(_srcVal1);
+    srcValues.push_back(_srcVal2);
+}
+
+/// @brief 析构函数
+CompareIRInst::~CompareIRInst()
+{}
+
+/// @brief 转换成字符串
+/// @param str 转换后的字符串
+void CompareIRInst::toString(std::string & str)
+{
+    Value *src1 = srcValues[0], *src2 = srcValues[1], *result = dstValue;
+
+    switch (op) {
+        case IRInstOperator::IRINST_OP_LE_I:
+            // 小于等于指令，二元运算
+            str = result->getName() + " = cmp le " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_LT_I:
+            // 小于指令，二元运算
+            str = result->getName() + " = cmp lt " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_GT_I:
+            // 大于指令，二元运算
+            str = result->getName() + " = cmp gt " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_GE_I:
+            // 大于等于指令，二元运算
+            str = result->getName() + " = cmp ge " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_NE_I:
+            // 不等于指令，二元运算
+            str = result->getName() + " = cmp ne " + src1->toString() + ", " + src2->toString();
+            break;
+        case IRInstOperator::IRINST_OP_EQ_I:
+            // 等于指令，二元运算
+            str = result->getName() + " = cmp eq " + src1->toString() + ", " + src2->toString();
+            break;
+
+        default:
+            // 未知指令
+            IRInst::toString(str);
+            break;
+    }
+}
+
 /// @brief 无参数的函数调用
 /// @param name 函数名
 /// @param result 保存返回值的Value

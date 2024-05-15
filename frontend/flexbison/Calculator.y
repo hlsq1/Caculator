@@ -198,12 +198,6 @@ BlockItemList : BlockItem {
         // 创建一个AST_OP_BLOCK类型的中间节点，孩子为Statement($1)
         $$ = new_ast_node(ast_operator_type::AST_OP_BLOCK, $1, nullptr);
     }
-	| '{' BlockItem '}' {
-		// 大括号区分局部变量的定义域
-
-		// 创建一个AST_OP_BLOCK类型的中间节点，孩子为Statement($1)
-        $$ = new_ast_node(ast_operator_type::AST_OP_BLOCK, $1, nullptr);
-    }
     | BlockItemList BlockItem  {
         // 采用左递归的文法产生式，可以使得Block节点在上个产生式创建，后续递归追加孩子节点
         // 请注意，不要采用右递归，左递归翻遍孩子的追加
@@ -214,7 +208,10 @@ BlockItemList : BlockItem {
         // 采用左递归的文法产生式，可以使得Block节点在上个产生式创建，后续递归追加孩子节点
         // 请注意，不要采用右递归，左递归翻遍孩子的追加
         // BlockItem($2)作为Block($1)的孩子 
-        $$ = insert_ast_node($1, $2);
+		
+		// 嵌套的大括号，作用域不同
+		ast_node * block_node = new_ast_node(ast_operator_type::AST_OP_BLOCK, $3, nullptr);
+        $$ = insert_ast_node($1, block_node);
     }
     ;
 

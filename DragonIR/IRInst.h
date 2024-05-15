@@ -53,6 +53,24 @@ enum class IRInstOperator {
     /// @brief 整数的取负指令，一元运算
     IRINST_OP_NEG_I,
 
+    /// @brief 小于等于指令，二元运算
+    IRINST_OP_LE_I,
+
+    /// @brief 小于指令，二元运算
+    IRINST_OP_LT_I,
+
+    /// @brief 大于指令，二元运算
+    IRINST_OP_GT_I,
+
+    /// @brief 大于等于指令，二元运算
+    IRINST_OP_GE_I,
+
+    /// @brief 不等于指令，二元运算
+    IRINST_OP_NE_I,
+
+    /// @brief 等于指令，二元运算
+    IRINST_OP_EQ_I,
+
     /* 后续可追加其他的IR指令 */
 
     /// @brief 最大指令码，也是无效指令
@@ -196,6 +214,24 @@ public:
 
     /// @brief 析构函数
     virtual ~BinaryIRInst() override;
+
+    /// @brief 转换成字符串
+    void toString(std::string & str) override;
+};
+
+/// @brief 比较运算指令
+class CompareIRInst : public IRInst {
+
+public:
+    /// @brief 构造函数
+    /// @param _op 操作符
+    /// @param _result 结果操作数
+    /// @param _srcVal1 源操作数1
+    /// @param _srcVal2 源操作数2
+    CompareIRInst(IRInstOperator _op, Value * _result, Value * _srcVal1, Value * _srcVal2);
+
+    /// @brief 析构函数
+    virtual ~CompareIRInst() override;
 
     /// @brief 转换成字符串
     void toString(std::string & str) override;

@@ -38,6 +38,14 @@ IRGenerator::IRGenerator(ast_node * _root, SymbolTable * _symtab) : root(_root),
     ast2ir_handlers[ast_operator_type::AST_OP_DIV] = &IRGenerator::ir_div;
     ast2ir_handlers[ast_operator_type::AST_OP_MOD] = &IRGenerator::ir_mod;
 
+    /* 关系运算 */
+    ast2ir_handlers[ast_operator_type::AST_OP_LE] = &IRGenerator::ir_le;
+    ast2ir_handlers[ast_operator_type::AST_OP_LT] = &IRGenerator::ir_lt;
+    ast2ir_handlers[ast_operator_type::AST_OP_GT] = &IRGenerator::ir_gt;
+    ast2ir_handlers[ast_operator_type::AST_OP_GE] = &IRGenerator::ir_ge;
+    ast2ir_handlers[ast_operator_type::AST_OP_NE] = &IRGenerator::ir_ne;
+    ast2ir_handlers[ast_operator_type::AST_OP_EQ] = &IRGenerator::ir_eq;
+
     /* 语句 */
     ast2ir_handlers[ast_operator_type::AST_OP_EXPR] = &IRGenerator::ir_expr_noshow;
     ast2ir_handlers[ast_operator_type::AST_OP_EXPR_SHOW] = &IRGenerator::ir_expr_show;
@@ -50,6 +58,11 @@ IRGenerator::IRGenerator(ast_node * _root, SymbolTable * _symtab) : root(_root),
     /* 函数定义 */
     ast2ir_handlers[ast_operator_type::AST_OP_FUNC_DEF] = &IRGenerator::ir_function_define;
     ast2ir_handlers[ast_operator_type::AST_OP_FUNC_FORMAL_PARAMS] = &IRGenerator::ir_function_formal_params;
+
+    /* 变量定义 */
+    ast2ir_handlers[ast_operator_type::AST_OP_VAR_DECLS] = &IRGenerator::ir_var_list;
+    ast2ir_handlers[ast_operator_type::AST_OP_VAR_DECL] = &IRGenerator::ir_var_define;
+    ast2ir_handlers[ast_operator_type::AST_OP_TYPE_INT] = &IRGenerator::ir_type_int;
 
     /* 语句块 */
     ast2ir_handlers[ast_operator_type::AST_OP_BLOCK] = &IRGenerator::ir_block;
@@ -309,6 +322,67 @@ bool IRGenerator::ir_block(ast_node * node)
     return true;
 }
 
+/// @brief 变量定义列表AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_var_list(ast_node * node)
+{
+
+    // 遍历变量定义列表，孩子是变量定义节点
+    for (auto son: node->sons) {
+
+        // 遍历变量定义列表，孩子是变量定义
+        ast_node * son_node = ir_visit_ast_node(son);
+        if (!son_node) {
+
+            return false;
+        }
+    }
+    return true;
+}
+
+/// @brief 变量定义AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_var_define(ast_node * node)
+{
+
+    // 孩子节点只有一个，是类型节点
+    if (node->sons.size() == 1) {
+        Value * val;
+
+        val = symtab->currentFunc->findValue(node->name, false);
+        if (!val) {
+
+            // 变量不存在，则创建一个变量
+            val = symtab->currentFunc->newVarValue(node->name);
+        }
+
+        node->val = val;
+    } else if (node->sons.size() == 2) {
+        // 遍历变量定义，孩子是类型节点，或赋值节点
+        for (auto son: node->sons) {
+
+            ast_node * son_node = ir_visit_ast_node(son);
+            if (!son_node) {
+
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/// @brief int类型AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_type_int(ast_node * node)
+{
+    // 默认类型都是int，所以这里什么也不用做
+    return true;
+}
+
 /// @brief 表达式语句ST节点翻译成线性中间IR的共同函数
 /// @param node AST节点
 /// @param show 是否显示值，true：显示，false：不显示
@@ -557,6 +631,204 @@ bool IRGenerator::ir_mod(ast_node * node)
     node->blockInsts.addInst(left->blockInsts);
     node->blockInsts.addInst(right->blockInsts);
     node->blockInsts.addInst(new BinaryIRInst(IRInstOperator::IRINST_OP_MOD_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 小于等于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_le(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_LE_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 小于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_lt(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_LT_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 大于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_gt(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_GT_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 大于等于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_ge(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_GE_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 不等于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_ne(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_NE_I, resultValue, left->val, right->val));
+    node->val = resultValue;
+
+    return true;
+}
+
+/// @brief 等于AST节点翻译成线性中间IR
+/// @param node AST节点
+/// @return 翻译是否成功，true：成功，false：失败
+bool IRGenerator::ir_eq(ast_node * node)
+{
+    ast_node * src1_node = node->sons[0];
+    ast_node * src2_node = node->sons[1];
+
+    // 左边操作数
+    ast_node * left = ir_visit_ast_node(src1_node);
+    if (!left) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    // 右边操作数
+    ast_node * right = ir_visit_ast_node(src2_node);
+    if (!right) {
+        // 某个变量没有定值
+        return false;
+    }
+
+    Value * resultValue = symtab->currentFunc->newTempValue(BasicType::TYPE_BOOL);
+
+    // 创建临时变量保存IR的值，以及线性IR指令
+    node->blockInsts.addInst(left->blockInsts);
+    node->blockInsts.addInst(right->blockInsts);
+    node->blockInsts.addInst(new CompareIRInst(IRInstOperator::IRINST_OP_EQ_I, resultValue, left->val, right->val));
     node->val = resultValue;
 
     return true;

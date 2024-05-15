@@ -28,6 +28,9 @@ std::string ValueType::toString()
         case BasicType::TYPE_INT:
             str = "i32";
             break;
+        case BasicType::TYPE_BOOL:
+            str = "i1";
+            break;
         case BasicType::TYPE_FLOAT:
             str = "float";
             break;

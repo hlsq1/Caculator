@@ -1,0 +1,8 @@
+i32 main()
+{
+	entry
+	%t1 = cmp gt i32 a, i32 b
+	call void @putint(i1 %t1)
+L0:
+	exit i32 0
+}
